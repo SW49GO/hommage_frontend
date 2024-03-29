@@ -2,7 +2,7 @@ import { selectAuth } from "../features/selector"
 import { useSelector } from "react-redux"
 import { Link } from "react-router-dom"
 
-function Home (){
+const Home = () =>{
     const auth = useSelector(selectAuth)
 
     return (
@@ -30,7 +30,7 @@ function Home (){
                 </div>
                 <div className="home__button">
                     {!auth ? (<Link className="button button-a" to={'/register'}>S'inscrire</Link>)
-                          :(<a className="button button-a" href="?page=home_user" title="Espace membre">Espace Membre</a>)
+                          :(<Link className="button button-a" to={'/homeUser'} title="Espace membre">Espace Membre</Link>)
                     }
                 </div>
             </div>
@@ -110,4 +110,5 @@ function Home (){
     </div>
     )
 }
+
 export default Home

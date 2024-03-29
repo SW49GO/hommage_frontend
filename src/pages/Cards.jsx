@@ -1,4 +1,4 @@
-function Cards(){
+const Cards=()=>{
     return (
         <></>
     )

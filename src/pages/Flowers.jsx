@@ -1,4 +1,4 @@
-function Flowers(){
+const Flowers = () =>{
     return (
         <></>
     )
