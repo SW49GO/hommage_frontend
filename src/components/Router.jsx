@@ -1,4 +1,5 @@
 import {BrowserRouter , Routes, Route} from 'react-router-dom'
+import Template from '../pages/Template'
 import Home from '../pages/Home'
 import Register from '../pages/Register'
 import Cards from '../pages/Cards'
@@ -12,7 +13,7 @@ import Search from '../pages/Search'
 import UserHeader from '../pages/UserHeader'
 import CreateForm from '../pages/CreateForm'
 import Profil from '../pages/Profil'
-import Template from '../pages/Template'
+import Lost from '../pages/Lost'
 
 /**
  * Component function for routing
@@ -34,6 +35,7 @@ const Router=()=>{
                                 <Route path='/userContent' element={<UserHeader/>} />
                                 <Route path='/createForm' element={<CreateForm/>} />
                                 <Route path='/profil' element={<Profil/>} />
+                                <Route path='/lost' element={<Lost/>} />
                                 <Route path='*' element={<Error/>} />
                         </Routes>
                     </Template>

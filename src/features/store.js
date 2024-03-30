@@ -45,8 +45,9 @@ const userSlice = createSlice({
   },
   reducers: {
     setUserInfos: (state, action)=>{
-      const {firstName, lastName, photo, pseudo, numberRoad, address, cp, city, email} = action.payload
+      const {id, firstName, lastName, photo, pseudo, numberRoad, address, cp, city, email} = action.payload
       state.userInfos.push({
+        id : id || '',
         firstName : firstName || '',
         lastName : lastName || '',
         photo : photo || '',
