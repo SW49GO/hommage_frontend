@@ -18,14 +18,14 @@ const Flowers = () =>{
                         <div>
                         {/* <p><?=$f['info']?></p>
                         <p><?=$f['price']?><span> €</span></p>
-            <?php if (isset($_SESSION['user']['id'])) :?>
-                        <input class="flower_id" type="checkbox" name ="check[]" value="<?=$f['id']?>">
-            <?php endif ?>
+            <?php if (isset($_SESSION['user']['id'])) :?> */}
+                        {/* <input class="flower_id" type="checkbox" name ="check[]" value="<?=$f['id']?>"> */}
+            {/* <?php endif ?> */}
                         </div>
                     </div>
-            <?php endforeach ?>
-                </div>
-            <?php if (isset($_SESSION['user']['id'])) :?> */}
+            {/* <?php endforeach ?> */}
+              </div>
+            {/* <?php if (isset($_SESSION['user']['id'])) :?> */}
                 <fieldset>
                     <label for="select_defunct">Sélectionner le défunt</label>
                     <div class="flower__dest">

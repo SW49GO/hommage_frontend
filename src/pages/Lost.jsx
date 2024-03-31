@@ -22,8 +22,8 @@ const Lost = ()=>{
                 </div>
                 <div className="<?=$_SESSION['lost_code']?>">
                         {/* <?php if (isset($_SESSION['user']['identify'])): ?> */}
-                    <p className="message"><?=$_SESSION['user']['email']?> est bien identifié sur le site :</p>
-                    <h4>Votre code d'accès est : <?=$_SESSION['code']?></h4>
+                    {/* <p className="message"><?=$_SESSION['user']['email']?> est bien identifié sur le site :</p> */}
+                    {/* <h4>Votre code d'accès est : <?=$_SESSION['code']?></h4> */}
                     <label for="code">Entrer le code réçu par email</label>
                     <input type="number" name="code" id="code"/>
                     <label for="subcode"></label>

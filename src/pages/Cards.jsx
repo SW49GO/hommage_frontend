@@ -11,7 +11,7 @@ const Cards=()=>{
                 <div class="card__image">
                     <img class="img card__select_img" src="./assets/cards/<?=$r['name']?>" alt="<?=$r['info']?>"/>
                     </div>
-                <p>Tarif : <?=$r['price']?>  Euros</p>
+                {/* <p>Tarif : <?=$r['price']?>  Euros</p> */}
                 {/* <?php if (isset($_SESSION['user']['id'])) :?> */}
                 <a class="button" href = "?page=card&id=<?=$r['id']?>">Selectionner</a>
                 {/* <?php endif ?> */}
@@ -74,7 +74,7 @@ const Cards=()=>{
                         <?=$mess_dest?> */}
                     </div>
                     <div class="card__info">
-                        <h3>Nombre de cartes avec texte intégré enregisteés: <span id="card__nb"><?=count($_SESSION['nbCard'])?></span></h3>
+                        {/* <h3>Nombre de cartes avec texte intégré enregisteés: <span id="card__nb"><?=count($_SESSION['nbCard'])?></span></h3> */}
                         <h4>Montant de vos achats :</h4>
                         <table class="card__table">
                             <thead>
@@ -89,7 +89,7 @@ const Cards=()=>{
                             <tfoot>
                                 <tr>
                                 <td>Total</td> 
-                                <td id="card__total"><?=$total_card?>€</td>
+                                {/* <td id="card__total"><?=$total_card?>€</td> */}
                                 </tr>
                             </tfoot>
                         </table>
@@ -102,7 +102,7 @@ const Cards=()=>{
                     {/* <?php endif ?> */}
                 </form>
             </div>
-        </div>
+    
         </section>
         <section>
         {/* <?php else : ?> */}
