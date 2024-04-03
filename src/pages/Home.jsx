@@ -1,13 +1,47 @@
 import { selectAuth } from "../features/selector"
 import { useSelector } from "react-redux"
+import { useState } from "react"
+import { useQueryClient,useQuery } from "react-query"
 import { Link } from "react-router-dom"
+import { setFiles } from "../services/api"
+import {useForm} from 'react-hook-form'
 
 const Home = () =>{
+    const queryClient = useQueryClient()
+    const {handleSubmit} = useForm()
+    const [file, setFile] = useState()
+     console.log('file:', file)
+ 
+    const { data} = useQuery('file', () => setFiles(1, file, 'photo'),
+    {  enable: file!==undefined,
+        retry:1,
+      onSuccess: (data) => {if (data && data.body) {
+        // console.log ('dataQuery',data)
+      }},
+      onError: (err) => {console.log(err)}
+    })
     const auth = useSelector(selectAuth)
+ 
+    const handleFileChange = (event) => {
+        console.log('event.target.files[0]:', event.target.files[0])
+        const formdata = new FormData()
+        formdata.append('file',event.target.files[0])
+        setFile(formdata)
+    }
+    const saveFile = () => {
+        console.log(file)
+        queryClient.invalidateQueries('file')
+    }
 
     return (
     <div className="home">
         <h1>Faites perdurer la mémoire de vos proches en partageant tout vos souvenirs</h1>
+        <div>
+        <form onSubmit={handleSubmit(saveFile)} encType="multipart/form-data">
+                <input type="file" name="file" onChange={handleFileChange} />
+                <button type="submit">Charger</button>
+            </form>
+        </div>
         <section className="home__intro">
             <h4>En toute simplicité</h4>
             <article className="home__article">
