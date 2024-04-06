@@ -1,5 +1,8 @@
 // Selector for authentification
 export const selectAuth = (state) => state.authSlice.auth
+export const selectToken = (state) =>state.authSlice.token
+export const selectUserId = (state) => state.authSlice.id
+
 
 // Selector for user informations
 export const selectUserInfos = (state) =>state.userSlice.userInfos

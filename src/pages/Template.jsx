@@ -2,20 +2,14 @@ import UserHeader from "./UserHeader"
 import { useSelector } from "react-redux"
 import { selectAuth } from "../features/selector"
 import '../index.css'
-import {  useQuery } from 'react-query'
 import { getInfosUser } from "../services/api"
+import { useEffect } from "react"
+
 
 const Template= (props)=>{
-    // const queryClient = useQueryClient()
-    const { data} = useQuery('infosUser', () => getInfosUser(1, 'getUserData'),
-    { retry:1,
-      onSuccess: (data) => {if (data && data.body) {
-        // console.log ('dataQuery',data)
-      }},
-      onError: (err) => {console.log(err)}
-    })
-    // console.log('dataAfter:', data)
-
+  useEffect(()=>{
+    getInfosUser(1, 'getUserData')
+  })
     let auth = useSelector(selectAuth)
     auth = true
     return (

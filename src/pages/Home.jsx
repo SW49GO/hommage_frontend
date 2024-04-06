@@ -1,47 +1,71 @@
 import { selectAuth } from "../features/selector"
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
 import { useState } from "react"
-import { useQueryClient,useQuery } from "react-query"
 import { Link } from "react-router-dom"
-import { setFiles } from "../services/api"
+import { setFiles, signIn, verifyAccount} from "../services/api"
 import {useForm} from 'react-hook-form'
+import { setToken, setId, setPwd, setAuth } from "../features/store"
+
 
 const Home = () =>{
-    const queryClient = useQueryClient()
-    const {handleSubmit} = useForm()
-    const [file, setFile] = useState()
-     console.log('file:', file)
- 
-    const { data} = useQuery('file', () => setFiles(1, file, 'photo'),
-    {  enable: file!==undefined,
-        retry:1,
-      onSuccess: (data) => {if (data && data.body) {
-        // console.log ('dataQuery',data)
-      }},
-      onError: (err) => {console.log(err)}
-    })
+    const dispatch = useDispatch()
+    const {handleSubmit,register} = useForm()
+    const [image, setImage] = useState('')
     const auth = useSelector(selectAuth)
- 
-    const handleFileChange = (event) => {
-        console.log('event.target.files[0]:', event.target.files[0])
-        const formdata = new FormData()
-        formdata.append('file',event.target.files[0])
-        setFile(formdata)
-    }
-    const saveFile = () => {
-        console.log(file)
-        queryClient.invalidateQueries('file')
-    }
+    
+      const saveFile = () => {
+        setFiles(1,2,'def',image)
+      }
+      const dataForm = async(data) =>{
+        const result = await signIn(data)
+        if(result){
+            dispatch(setPwd(result.token))
+            dispatch(setId(result.result))
+        }
+      }
+
+      const account = async(data) =>{
+        const result = await verifyAccount(data)
+        dispatch(setToken(result.token))
+        dispatch(setId(result.userId))
+        dispatch(setAuth(true))
+      }
 
     return (
     <div className="home">
         <h1>Faites perdurer la mémoire de vos proches en partageant tout vos souvenirs</h1>
-        <div>
-        <form onSubmit={handleSubmit(saveFile)} encType="multipart/form-data">
-                <input type="file" name="file" onChange={handleFileChange} />
-                <button type="submit">Charger</button>
-            </form>
-        </div>
+        {/* <div>
+            <input type="file" name="file" onChange={(e)=>{setImage(e.target.files[0])}} />
+            <button onClick={saveFile}>Charger</button>
+        </div> */}
+        {/* <form onSubmit={handleSubmit(dataForm)}>
+            <label htmlFor="firstname">Prénom</label>
+            <input type="text" id="firstname" name="firstame" required {...register('firstname')}/>
+            <label htmlFor="lastname">Nom</label>
+            <input type="text" id="lastname" name="lastname" required {...register('lastname')}/>
+            <label htmlFor="pseudo">Pseudo</label>
+            <input type="text" id="pseudo" name="pseudo" required {...register('pseudo')}/>
+            <label htmlFor="email">Email</label>
+            <input type="email" id="email" name="email" required {...register('email')}/>
+            <label htmlFor="password">Mot de passe</label>
+            <input type="txt" id="password" name="password" required {...register('password')}/>
+            <label htmlFor="number_road">N°</label>
+            <input type="number" id="number_road" name="number_road" required {...register('number_road')}/>
+            <label htmlFor="address">Adresse</label>
+            <input type="txt" id="address" name="address" required {...register('address')}/>
+            <label htmlFor="city">Ville</label>
+            <input type="txt" id="city" name="city" required {...register('city')}/>
+            <label htmlFor="postal_code">Code Postal</label>
+            <input type="number" id="postal_code" name="postal_code" required {...register('postal_code')}/>
+            <button >S'inscrire</button>
+        </form> */}
+        <form onSubmit={handleSubmit(account)}>
+            <label htmlFor="email">Email</label>
+            <input type="email" id="email" name="email" required {...register('email')}/>
+            <label htmlFor="password">Mot de passe</label>
+            <input type="txt" id="password" name="password" required {...register('password')}/>
+            <button >Se connecter</button>
+        </form>
         <section className="home__intro">
             <h4>En toute simplicité</h4>
             <article className="home__article">

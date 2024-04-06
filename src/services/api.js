@@ -1,3 +1,42 @@
+export async function signIn(data){
+  try{
+    const response = await fetch(`http://localhost:3000/api/user/signIn/setRegister`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data),
+    })
+      if(response.ok){
+        const data = await response.json()
+        console.log('dataFetch:', data)
+        return data
+      }else if(response.status===400){
+        throw new Error('400')
+      }
+  }catch(error){
+     return Promise.reject(error)
+  }
+}
+
+export async function verifyAccount(data){
+  console.log('data:', data)
+  try{
+    const response = await fetch(`http://localhost:3000/api/user/connect/verifyAccount`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data),
+    })
+      if(response.ok){
+        const data = await response.json()
+        // console.log('dataFetch:', data)
+        return data
+      }else if(response.status===400){
+        throw new Error('400')
+      }
+  }catch(error){
+     return Promise.reject(error)
+  }
+}
+
 export async function getInfosUser(id, ctrl) {
     // console.log('ctrl:', ctrl)
     // console.log('id:', id)
@@ -23,22 +62,27 @@ export async function getInfosUser(id, ctrl) {
     }
 }
 
-export async function setFiles(id, src, dest){
-  console.log('src:', src)
-  console.log('id:', id)
+export async function setFiles(id, defId, dest, file){
+
+  const formData = new FormData()
+    formData.append('id', id)
+    formData.append('defId', defId)
+    formData.append('dest', dest)
+    formData.append('image', file)
+
+
   try{
-    const response = await fetch (`http://localhost:3000/images/registerFile`,{
+    const response = await fetch (`http://localhost:3000/api/user/registerFile`,{
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({id:id, src:src, dest:dest}),
+      header: {'Content-Type': 'multipart/form-data'},
+      body: formData,
     })
-    if(response.ok){
-      const data = await response.json()
-      console.log('fileFetch:', data)
-      return data
-    }else if(response.status===400){
-      throw new Error('400')
-        }
+      if(response.ok){
+        return 'requete reçu'
+      }else {
+        const data = await response.json()
+       return data
+      }
     }catch(error){
       return Promise.reject(error)
     }
