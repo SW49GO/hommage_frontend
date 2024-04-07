@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 import { setFiles, signIn, verifyAccount} from "../services/api"
 import {useForm} from 'react-hook-form'
-import { setToken, setId, setPwd, setAuth } from "../features/store"
+import { setToken, setId, setAuth } from "../features/store"
 
 
 const Home = () =>{
@@ -19,7 +19,6 @@ const Home = () =>{
       const dataForm = async(data) =>{
         const result = await signIn(data)
         if(result){
-            dispatch(setPwd(result.token))
             dispatch(setId(result.result))
         }
       }
@@ -59,13 +58,13 @@ const Home = () =>{
             <input type="number" id="postal_code" name="postal_code" required {...register('postal_code')}/>
             <button >S'inscrire</button>
         </form> */}
-        <form onSubmit={handleSubmit(account)}>
+        {/* <form onSubmit={handleSubmit(account)}>
             <label htmlFor="email">Email</label>
             <input type="email" id="email" name="email" required {...register('email')}/>
             <label htmlFor="password">Mot de passe</label>
             <input type="txt" id="password" name="password" required {...register('password')}/>
             <button >Se connecter</button>
-        </form>
+        </form> */}
         <section className="home__intro">
             <h4>En toute simplicité</h4>
             <article className="home__article">

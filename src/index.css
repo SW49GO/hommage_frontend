@@ -110,6 +110,7 @@ cursor: pointer;
   text-align:center;
   color: var(--color-red);
   font-weight: bold;
+  margin-top:1rem;
 }
 /*******************************Globals Dimension*******************************/
 .dim200 {
@@ -1535,7 +1536,7 @@ input {
 /*****NAV*****/
 .nav__bar {
   width: 10rem;
-  right: -10rem;
+  right: -0.5rem;
 }
 .open {
   top: 3.5rem;
@@ -1645,7 +1646,7 @@ input {
   .nav__bar {
       height: 24rem;
       width: 11.5rem;
-      right: -11.5rem;
+      right: -0.5rem;
   }
   .nav__bar-a {
       font-size: 1.3rem;
@@ -1809,7 +1810,7 @@ input {
   }
   /******NAV******/
   .nav__bar {
-      right: -13.5rem;
+      right: 0rem;
       line-height: 1.7rem;
       height: 28rem;
       width: 13.5rem;
@@ -1964,7 +1965,7 @@ input {
   /******NAV******/
   .nav__bar {
       width: 15.5rem;
-      right: -15.5rem;
+      right: 0rem;
       line-height: 2rem;
       height: 35rem;
   }

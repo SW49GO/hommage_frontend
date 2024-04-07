@@ -14,6 +14,8 @@ import UserHeader from '../pages/UserHeader'
 import CreateForm from '../pages/CreateForm'
 import Profil from '../pages/Profil'
 import Lost from '../pages/Lost'
+import Connexion from '../pages/Connexion'
+import HomeUser from '../pages/HomeUser'
 
 /**
  * Component function for routing
@@ -36,6 +38,8 @@ const Router=()=>{
                                 <Route path='/createForm' element={<CreateForm/>} />
                                 <Route path='/profil' element={<Profil/>} />
                                 <Route path='/lost' element={<Lost/>} />
+                                <Route path='/connexion' element={<Connexion/>} />
+                                <Route path='/homeUser' element={<HomeUser/>} />
                                 <Route path='*' element={<Error/>} />
                         </Routes>
                     </Template>

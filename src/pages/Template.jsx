@@ -1,17 +1,13 @@
 import UserHeader from "./UserHeader"
-import { useSelector } from "react-redux"
+import { useSelector} from "react-redux"
 import { selectAuth } from "../features/selector"
 import '../index.css'
-import { getInfosUser } from "../services/api"
-import { useEffect } from "react"
+
 
 
 const Template= (props)=>{
-  useEffect(()=>{
-    getInfosUser(1, 'getUserData')
-  })
-    let auth = useSelector(selectAuth)
-    auth = true
+
+    const auth = useSelector(selectAuth)
     return (
     <>
         <div id="main__begin">

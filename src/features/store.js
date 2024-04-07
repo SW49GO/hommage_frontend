@@ -3,25 +3,21 @@ import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import storageSession from 'redux-persist/lib/storage/session'
 
-const localStoragePersistConfig = {
-    key: 'localStorageSlice',
-    storage: storage,
-    whitelist: ['']
+const localStorageUser = {
+    key: 'localStorageUser',
+    storage
   }
-  
-const sessionStoragePersistConfig = {
-key: 'sessionStorageSlice',
-storage: storageSession,
-whitelist: ['authSlice']
-}
+  const sessionStorageAuth = {
+    key: 'localStorageAuth',
+    storage: storageSession
+  }
 
 const authSlice = createSlice({
   name: 'authSlice',
   initialState: {
       auth: false,
       token : '',
-      id: null,
-      pwd : ''
+      id: null
   },
   reducers: {
       setAuth: (state, action)=>{
@@ -30,11 +26,8 @@ const authSlice = createSlice({
       setToken : (state, action)=>{
         state.token = action.payload 
       },
-      setPwd : (state, action)=>{
+      setId : (state, action)=>{
         state.pwd = action.payload 
-      },
-      setId: (state,action)=>{
-        state.id = action.payload
       }
     }
 })
@@ -49,19 +42,19 @@ const userSlice = createSlice({
   },
   reducers: {
     setUserInfos: (state, action)=>{
-      const {id, firstName, lastName, photo, pseudo, numberRoad, address, cp, city, email} = action.payload
-      state.userInfos.push({
-        id : id || '',
-        firstName : firstName || '',
-        lastName : lastName || '',
-        photo : photo || '',
-        pseudo : pseudo || '',
-        numberRoad : numberRoad || '',
-        address : address || '',
-        cp : cp || '',
-        city : city || '',
-        email : email || ''
-      })
+      const {id, firstname, lastname, photo, pseudo, number_road, address, postal_code, city, email} = action.payload
+      state.userInfos = [{
+        id: id || '',
+        firstname: firstname || '',
+        lastname: lastname || '',
+        photo: photo || '',
+        pseudo: pseudo || '',
+        number_road: number_road || '',
+        address: address || '',
+        postal_code: postal_code || '',
+        city: city || '',
+        email: email || ''
+      }]
     },
     setNumberFriends : (state, action)=>{
       state.numberFriends = action.payload
@@ -82,8 +75,8 @@ const userSlice = createSlice({
 export const {setAuth, setToken,setId, setPwd} = authSlice.actions
 export const {setUserInfos, setNumberFriends, setNumberMessages, setDefunctsList} = userSlice.actions
 
-const authPersistSlice = persistReducer(sessionStoragePersistConfig, authSlice.reducer)
-const userInfosPersistSlice = persistReducer(localStoragePersistConfig, userSlice.reducer)
+const authPersistSlice = persistReducer(sessionStorageAuth, authSlice.reducer)
+const userInfosPersistSlice = persistReducer(localStorageUser, userSlice.reducer)
 
 // Store configuration
 export const store = configureStore({

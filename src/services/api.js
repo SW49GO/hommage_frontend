@@ -29,17 +29,22 @@ export async function verifyAccount(data){
         const data = await response.json()
         // console.log('dataFetch:', data)
         return data
-      }else if(response.status===400){
-        throw new Error('400')
+      }else if(response.status===404){
+        return {message:'404'}
+      }else if (response.status===401){
+        return {message:'401'}
       }
+
   }catch(error){
      return Promise.reject(error)
   }
 }
 
-export async function getInfosUser(id, ctrl) {
+export async function getInfosUser(id,token, ctrl) {
+    console.log('token:', token)
     // console.log('ctrl:', ctrl)
-    // console.log('id:', id)
+     console.log('id:', id)
+
     if (!id) {
       return 'Missing data'
     }
@@ -47,12 +52,11 @@ export async function getInfosUser(id, ctrl) {
     try{
       const response = await fetch(`http://localhost:3000/api/user/getInfos/${ctrl}`, {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({id}),
+          headers: {'Content-Type': 'application/json','Authorization': `Bearer ${token}`},
+          body: JSON.stringify({id:id}),
       })
         if(response.ok){
           const data = await response.json()
-          // console.log('dataFetch:', data)
           return data
         }else if(response.status===400){
           throw new Error('400')

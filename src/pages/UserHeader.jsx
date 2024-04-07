@@ -9,6 +9,7 @@ const UserHeader = () =>{
     const numberMessages = useSelector(selectNumberMessages)
     const defunctsList = useSelector(selectDefunctsList)
     return(
+       
         <>
         <section className="user">
             <h3>{infosUser.pseudo ? infosUser.pseudo : infosUser.lastName+' '+infosUser.firstName}</h3>
