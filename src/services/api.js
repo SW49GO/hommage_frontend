@@ -66,7 +66,10 @@ export async function getInfosUser(id,token, ctrl) {
     }
 }
 
-export async function setFiles(id, defId, dest, file){
+export async function setFiles(id, defId, dest, token, file){
+console.log('fileFETCH:', file)
+console.log('id:', id)
+console.log('token:', token)
 
   const formData = new FormData()
     formData.append('id', id)
@@ -74,21 +77,45 @@ export async function setFiles(id, defId, dest, file){
     formData.append('dest', dest)
     formData.append('image', file)
 
-
   try{
     const response = await fetch (`http://localhost:3000/api/user/registerFile`,{
       method: 'POST',
-      header: {'Content-Type': 'multipart/form-data'},
+      headers: {'Authorization': `Bearer ${token}`},
       body: formData,
     })
-      if(response.ok){
-        return 'requete reçu'
-      }else {
-        const data = await response.json()
-       return data
-      }
+    if (response.ok) {
+      const data = await response.json()
+      return data.path
+  } else {
+      // Gérer le cas où la réponse n'est pas OK
+      return Promise.reject(new Error('Request failed'));
+  }
     }catch(error){
       return Promise.reject(error)
     }
   }
 
+  export async function updateInfosUser(id, photo, token, ctrl) {
+    console.log('token:', token)
+    // console.log('ctrl:', ctrl)
+     console.log('id:', id)
+
+    if (!id) {
+      return 'Missing data'
+    }
+
+    try{
+      const response = await fetch(`http://localhost:3000/api/user/updater/${ctrl}`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json','Authorization': `Bearer ${token}`},
+          body: JSON.stringify({id:id, photo:photo}),
+      })
+        if(response.ok){
+          return 'update'
+        }else if(response.status===400){
+          throw new Error('400')
+        }
+    }catch(error){
+       return Promise.reject(error)
+    }
+}

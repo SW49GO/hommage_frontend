@@ -1,5 +1,5 @@
 import { getInfosUser } from "../services/api"
-import { useEffect, useState } from "react"
+import { useEffect} from "react"
 import { setUserInfos } from "../features/store"
 import { selectAuth, selectToken, selectUserId } from "../features/selector"
 import { useSelector, useDispatch} from "react-redux"
@@ -8,12 +8,15 @@ import UserHeader from "./UserHeader"
 const HomeUser=()=>{
     const dispatch = useDispatch()
     const userId = useSelector(selectUserId)
+    console.log('userId:', userId)
     const token = useSelector(selectToken)
+    console.log('tokenHome:', token)
     const auth = useSelector(selectAuth)
    //Dispatch User Information
     useEffect(() => {
         const fetchDataUser = async () => {
         const response = await getInfosUser(userId, token, 'getUserData')
+        console.log('response:', response)
         dispatch(setUserInfos(response.userData[0]))
         }
         fetchDataUser()
