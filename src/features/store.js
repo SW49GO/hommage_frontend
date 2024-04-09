@@ -7,10 +7,14 @@ const localStorageUser = {
     key: 'localStorageUser',
     storage
   }
-  const sessionStorageAuth = {
-    key: 'localStorageAuth',
-    storage: storageSession
-  }
+const sessionStorageAuth = {
+  key: 'localStorageAuth',
+  storage: storageSession
+}
+const localStorageUtil = {
+  key: 'localStorageUtil',
+  storage
+}
 
 const authSlice = createSlice({
   name: 'authSlice',
@@ -63,30 +67,40 @@ const userSlice = createSlice({
       state.numberMessages = action.payload
     },
     setDefunctsList : (state, action)=>{
-      const {firstname,lastname, idDef} = action.payload
-      state.defunctsList.push({
-        idDef : idDef || '',
-        lastname : lastname || '',
-        firstname : firstname || ''
-      })
+      state.defunctsList = action.payload
       },
-      updateUserInfos : (state, action)=>{
-        state.userInfos[0].photo = action.payload
+    updateUserInfos : (state, action)=>{
+      state.userInfos[0].photo = action.payload
+    }
+  }
+})
+
+const utilSlice = createSlice({
+  name: 'utilSlice',
+  initialState: {
+    idDefIdSelected:null,
+  },
+  reducers: {
+    setDefIdSelected : (state,action)=>{
+      state.idDefIdSelected = action.payload
     }
   }
 })
 
 export const {setAuth, setToken,setId, setPwd} = authSlice.actions
 export const {setUserInfos, setNumberFriends, setNumberMessages, setDefunctsList,updateUserInfos} = userSlice.actions
+export const {setDefIdSelected} = utilSlice.actions
 
 const authPersistSlice = persistReducer(sessionStorageAuth, authSlice.reducer)
 const userInfosPersistSlice = persistReducer(localStorageUser, userSlice.reducer)
+const utilPersistSlice = persistReducer(localStorageUtil, utilSlice.reducer)
 
 // Store configuration
 export const store = configureStore({
     reducer : {
       authSlice : authPersistSlice,
-      userSlice : userInfosPersistSlice
+      userSlice : userInfosPersistSlice,
+      utilSlice : utilPersistSlice
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({

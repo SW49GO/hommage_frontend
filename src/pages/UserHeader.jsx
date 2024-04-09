@@ -4,17 +4,24 @@ import { useSelector, useDispatch } from "react-redux"
 import { Link } from "react-router-dom"
 import { useState} from "react"
 import { setFiles, updateInfosUser} from "../services/api"
-import { updateUserInfos, setAuth } from '../features/store'
+import { updateUserInfos, setAuth, setDefunctsList, setDefIdSelected, setNumberFriends} from '../features/store'
+import { getInfos } from "../services/api"
+import { useQuery } from 'react-query'
+import {useNavigate} from 'react-router-dom'
 
 
 const UserHeader = () =>{
+    const navigate = useNavigate()
     const dispatch = useDispatch()
     const fileInputRef = useRef(null)
     const infosUser = useSelector(selectUserInfos)
     const numberFriends = useSelector(selectNumberFriends)
+    console.log('numberFriends:', numberFriends)
     const numberMessages = useSelector(selectNumberMessages)
     const defunctsList = useSelector(selectDefunctsList)
-
+    console.log('defunctsList:', defunctsList)
+    const [isOpen, setIsOpen]=useState(false)
+    const toggleList = () => setIsOpen(!isOpen)
     // State to refresh navigator, useEffect can't used because name of image be always the same
     const [cacheBuster, setCacheBuster] = useState(0)
 
@@ -42,7 +49,34 @@ const UserHeader = () =>{
         }
         saveFile()
     }
+    // Defunct List
+    const { data:defunctArray } = useQuery('infoDef', () => getInfos(id, token, 'getUserDefunctList'),
+    { retry:1,
+      onSuccess: (data) => {if (data) {
+        const newDefunctsList = data.result.map((item)=>({
+            idDef: item.id,
+            firstname: item.firstname,
+            lastname: item.lastname
+          }))
+          dispatch(setDefunctsList(newDefunctsList))
+      }}
+    })
+    console.log(defunctArray)
+    // Active a new friend request since lastLog
+    const {data:friends} = useQuery('newFriend',()=> getInfos(id,token, 'getAskFriend'),
+    { retry:1,
+        onSuccess: (friends)=> {
+            console.log('inside',friends.friends)
+            dispatch(setNumberFriends(friends.friends.length))
+        }
+    })
 
+    // Activate icon if new friends
+    let icon_anim_f
+    if(numberFriends!==0){
+        icon_anim_f = 'icon_anim'
+    }
+console.log('friends',friends)
     return(
         <>
         <section className="user">
@@ -57,7 +91,7 @@ const UserHeader = () =>{
             <div className="user__icons">
                 <div className="user__new">
                     <Link to={'/tchat'} className="user__mini_icons" id="newFriend" title="Demande d'ami">
-                        <img className="img dim40 " src="./assets/site/friend.png" alt="icone demande d'ami"/>
+                        <img className={`img dim40 ${icon_anim_f}`} src="./assets/site/friend.png" alt="icone demande d'ami"/>
                         {/* <img className="img dim40 <?=$icon_anim_f?>" */}
                         <span className="number_f">{numberFriends}</span>
                     </Link>
@@ -81,10 +115,16 @@ const UserHeader = () =>{
         </section>
         <section className="user__menu">
                 <Link to="/createForm" className="user__button_menu" >Créer une fiche</Link>
-                {defunctsList.length>0 ? <div className ="user__button_menu user__myDefuncts">
-                    Modifier une fiche
-                        {/* <?=$list_def?> */}
-                </div> : <Link className="user__button_menu"to="/search">Rechercher une fiche</Link>}
+                {defunctsList.length>0 ? 
+                <><div className ="user__button_menu user__myDefuncts" onClick={toggleList}>
+                   <span>Modifier une fiche</span>
+                   {isOpen && <div className='user__list_defuncts'>
+                     {defunctsList.map((item)=>(
+                          <p key={item.idDef} onClick={()=>{setDefIdSelected(item.idDef); navigate('/modifyDef')}}>{item.lastname} {item.firstname}</p>
+                        ))}
+                        </div>}
+                        </div></>
+                    : <Link className="user__button_menu"to="/search">Rechercher une fiche</Link>}
                 <Link className="user__button_menu" to="/profil">Mon compte</Link>
                 <Link className="user__button_menu" to="/search">Rechercher</Link>
         </section>

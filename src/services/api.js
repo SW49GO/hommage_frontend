@@ -40,7 +40,7 @@ export async function verifyAccount(data){
   }
 }
 
-export async function getInfos(id,token, ctrl) {
+export async function getInfos(id, token, ctrl) {
     console.log('token:', token)
     // console.log('ctrl:', ctrl)
      console.log('id:', id)
@@ -141,3 +141,4 @@ export async function setRegister(id, token, data, ctrl){
         return Promise.reject(error)
       }
     }
+

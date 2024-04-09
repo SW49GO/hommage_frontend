@@ -17,6 +17,7 @@ import Connexion from '../pages/Connexion'
 import HomeUser from '../pages/HomeUser'
 import Environment from '../pages/Environment'
 import Tchat from '../pages/Tchat'
+import ModifyDef from '../pages/ModifyDef'
 
 /**
  * Component function for routing
@@ -33,6 +34,7 @@ const Router=()=>{
                                 <Route path='/register' element={<Register/>} />
                                 <Route path='/cards' element={<Cards/>} />
                                 <Route path='/tchat' element={<Tchat/>} />
+                                <Route path='/modifyDef' element={<ModifyDef/>} />
                                 <Route path='/flowers' element={<Flowers/>} />
                                 <Route path='/contact' element={<Contact/>} />
                                 <Route path='/buy' element={<Buy/>} />

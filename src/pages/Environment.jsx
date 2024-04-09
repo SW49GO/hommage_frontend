@@ -1,13 +1,28 @@
+import { selectToken, selectUserId } from "../features/selector"
+import { getInfos } from "../services/api"
+import { useQuery } from 'react-query'
+import {useSelector} from 'react-redux'
+import { Link } from "react-router-dom"
+
 const Environment=()=>{
+    const id = useSelector(selectUserId)
+    const token = useSelector(selectToken)
+    const { data } = useQuery('infoDef', () => getInfos(id, token, 'getUserDefunctList'),
+    { retry:1,
+      onSuccess: (data) => {if (data) {
+        console.log('data:', data.result)
+        // dispatch(setUserInfos(data.userData[0]))
+      }}
+    })
+
     return(
         <>
         <section>
             <div className="env">
-        // Lien de la fiche d'un défunt
-                {/* if (isset($_SESSION['user']['id'])) :?> */}
+            {/* Lien de la fiche d'un défunt */}
                 <div className="env__link">
                     <a className="env__link_img" href="?page=environment&id_def=<?=$defunct_infos['id']?>" title="Lien vers cette fiche">
-                        <img className="img dim35" src="public/pictures/site/link-icon.png" alt="icone lien"/>
+                        <img className="img dim35" src="./assets/site/link-icon.png" alt="icone lien"/>
                     </a>
                 </div>
             {/* <?php endif ?> */}
@@ -19,18 +34,18 @@ const Environment=()=>{
                 </div>
                 <hr/>
             {/* <?php  */}
-    // Dossier de téléchargement des photos du defunt sélectionné
+    {/* // Dossier de téléchargement des photos du defunt sélectionné */}
             {/* if (isset($_SESSION['user']['id'])) :?> */}
-            <a className="env__folder_link" href="" title="Dossier de stockage des photos">
+            <Link className="env__folder_link" href="" title="Dossier de stockage des photos">
                 <div className="env__folder">
                     <img className="img" src="public/pictures/site/folder.png" alt="Dossier de stockage photos"/>
                 </div>
                 <div>
                     {/* <p>Cliquez sur le Dossier pour telecharger les photos de <?=$defunct_infos['firstname'].' '.$defunct_infos['lastname'] ?></p> */}
                 </div>
-            </a>
+            </Link>
             {/* <?php  */}
-    // Identifiant du créateur de la fiche + ajout icone ami si pas dans la liste de l'utilisateur
+    {/* // Identifiant du créateur de la fiche + ajout icone ami si pas dans la liste de l'utilisateur */}
                 {/* if (isset($defunct_infos['user_id']) && $defunct_infos['user_id'] != $_SESSION['user']['id']) :?> */}
             <div className="env__add_friend">
                 <p><u>Gestionnaire de la fiche :</u></p>
@@ -48,7 +63,7 @@ const Environment=()=>{
             </div>
             {/* <?php endif ?>
         <?php  */}
-    // Dossier caché contenant toutes les photos du défunt
+    {/* // Dossier caché contenant toutes les photos du défunt */}
             {/* endif ?> */}
         </div>
     </section>
@@ -69,7 +84,7 @@ const Environment=()=>{
     </section>
     <section>
         {/* <?php  */}
-    // Nombre de commentaires et photos depuis la dernière connexion
+    {/* // Nombre de commentaires et photos depuis la dernière connexion */}
             {/* if (isset($_SESSION['user']['id']) && $defunct_infos['user_id'] == $_SESSION['user']['id']) : ?> */}
         <div className="env__listing">
             <p className="new_comments">Depuis votre dernière connexion :</p>
@@ -79,12 +94,12 @@ const Environment=()=>{
         <hr/>
         {/* <?php endif ?>
         <?php */}
-    // Ajouter une photo dans l'environnement utilisateur
+    {/* // Ajouter une photo dans l'environnement utilisateur */}
             {/* if (isset($_SESSION['user']['id'])) : ?> */}
         <div>
             {/* <?=$messFile?> */}
         </div>
-        <form method="POST" action="?page=environment&id=<?=$id_def?>" enctype="multipart/form-data" id="form_env">
+        {/* <form method="POST" action="?page=environment&id=<?=$id_def?>" enctype="multipart/form-data" id="form_env">
             <label for="file_env"></label>
             <input type="file" name="file_env" id="file_env" accept=".jpg, .jpeg, .png"/>
             <div className="env__add_photo">
@@ -92,11 +107,11 @@ const Environment=()=>{
                 <img className="img dim60" src="public/pictures/site/photo-icon.png" alt="appareil photo"/>
             </div>
             {/* <input type="hidden" name="token" value="<?=$token?>"> */}
-        </form>
+        {/* </form> */} 
         {/* <?php endif ?> */}
         <div className="env__container">
         {/* <?php  */}
-    // Liste des nouvelles photos depuis la dernière connexion
+    {/* // Liste des nouvelles photos depuis la dernière connexion */}
             {/* foreach($defunct_photos as $r): ?> */}
             <div className="env__container_photos">
             {/* <?php if (isset($_SESSION['user']['last_log']) && isset($r['date_crea']) && $_SESSION['user']['last_log'] < $r['date_crea']): ?> */}
@@ -110,7 +125,7 @@ const Environment=()=>{
                 </div>
             {/* <?php endif ?>
             <?php */}
-    //Supprimer une photo dont on est l'auteur
+    {/* //Supprimer une photo dont on est l'auteur */}
                 {/* if (isset($_SESSION['user']['id']) && isset($r['user_id']) && $_SESSION['user']['id'] == $r['user_id']): ?> */}
                 <a className="env__delete_photo" href="?page=environment&idPhoto=<?=$r['id']?>&id=<?=$id_def?>" title="Supprimer">
                     <img className="dim20" src="public/pictures/site/delete-icon.png" alt="Supprimer"/>
@@ -118,7 +133,7 @@ const Environment=()=>{
             {/* <?php endif ?> */}
                 <div id="<?=$r['id']?>">
             {/* <?php */}
-    // Affichage des photos 
+    {/* // Affichage des photos  */}
                 {/* if (!isset($_SESSION['user']['id'])) :?> */}
                     <img className="img env__blur_photo" src="public/pictures/photos/<?=$r['user_id'].'/'.$r['name']?>" alt="<?=$r['name']?>"/>
                 {/* <?php else :?> */}
@@ -127,7 +142,7 @@ const Environment=()=>{
                 </div>
                 <div className="env__comment">
             {/* <?php  */}
-    // Liste des commentaires de la photo + profil miniature des auteurs du commentaire
+    {/* // Liste des commentaires de la photo + profil miniature des auteurs du commentaire */}
                 {/* foreach($com_list[$r['id']] as $comment): ?> */}
                     <div className="comment_post">
                 {/* <?php if (!isset($_SESSION['user']['id'])) :?> */}
@@ -144,7 +159,7 @@ const Environment=()=>{
                         </div>
                         {/* <?=$comment['comment']?>
                 <?php  */}
-    // Supprimer un commentaire dont on est à l'origine                                 
+    {/* // Supprimer un commentaire dont on est à l'origine                                  */}
                     {/* if (isset($_SESSION['user']['id']) && $_SESSION['user']['id'] == $comment['user_id']): ?> */}
                             <div className="icon_delete">
                                 <a className ="env_user_name" href="?page=environment&id=<?=$id_def?>&idCom=<?=$comment['id']?>" title="Supprimer"><i className="fas fa-trash-alt"></i>
@@ -152,7 +167,7 @@ const Environment=()=>{
                             </div>
                 {/* <?php endif ?>
                 <?php */}
-    // Affichage d'un bandeau "New" pour les nouveaux commentaires
+    {/* // Affichage d'un bandeau "New" pour les nouveaux commentaires */}
                     {/* if ((isset($_SESSION['user']['last_log']) && isset($comment['date_crea']) && $_SESSION['user']['last_log'] < $comment['date_crea']) && (isset($_SESSION['user']['id']) && isset($comment['user_id']) && $_SESSION['user']['id'] !== $comment['user_id'])): ?> */}
                             <div className="new_comment">
                                 <img className="img" src="public/pictures/site/new.png" alt="Bandeau nouveau commentaire"/>
@@ -163,7 +178,7 @@ const Environment=()=>{
             {/* <?php endforeach ?> */}
                     </div>
             {/* <?php */}
-    // Formulaire ajout de commentaire
+    {/* // Formulaire ajout de commentaire */}
                 {/* if (isset($_SESSION['user']['id'])) : ?> */}
                     <form className="env__comment_form">
                         <input type="text" name="comment" className="env__comment_txt"/>

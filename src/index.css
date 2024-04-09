@@ -1072,7 +1072,6 @@ label[for="comment"]{
   display:flex;
   justify-content:center;
   align-items: center;
-  overflow: hidden;
   text-align:center;
   background-color: var(--color-bgc-button);
 }
@@ -1087,6 +1086,7 @@ label[for="comment"]{
   padding: 1.1rem;
 }
 .user__myDefuncts {
+  position:relative;
   text-align:center;
   font-size: 1rem;
 }
