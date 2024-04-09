@@ -40,7 +40,7 @@ export async function verifyAccount(data){
   }
 }
 
-export async function getInfosUser(id,token, ctrl) {
+export async function getInfos(id,token, ctrl) {
     console.log('token:', token)
     // console.log('ctrl:', ctrl)
      console.log('id:', id)
@@ -119,3 +119,25 @@ console.log('token:', token)
        return Promise.reject(error)
     }
 }
+
+export async function setRegister(id, token, data, ctrl){
+    console.log('data:', data)
+    const user_id = id
+    data.user_id=user_id
+  
+    try{
+      const response = await fetch (`http://localhost:3000/api/user/register/${ctrl}`,{
+        method: 'PUT',
+        headers: {'Authorization': `Bearer ${token}`,'Content-Type': 'application/json'},
+        body:JSON.stringify({id:id, data:data}),
+      })
+      if (response.ok) {
+        const data = await response.json()
+        return data
+    } else {
+        return Promise.reject(new Error('Request failed'));
+    }
+      }catch(error){
+        return Promise.reject(error)
+      }
+    }

@@ -46,7 +46,7 @@ const Tchat=()=>{
             <?php else :?> */}
                 <h2>Aucun nouveau message.</h2>
             {/* <?php endif ?> */}
-            </div>
+           
         </section>
         </>
     )

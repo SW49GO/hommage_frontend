@@ -1,4 +1,4 @@
-import { getInfosUser } from "../services/api"
+import { getInfos } from "../services/api"
 import { useEffect} from "react"
 import { setUserInfos } from "../features/store"
 import { selectAuth, selectToken, selectUserId } from "../features/selector"
@@ -15,7 +15,7 @@ const HomeUser=()=>{
    //Dispatch User Information
     useEffect(() => {
         const fetchDataUser = async () => {
-        const response = await getInfosUser(userId, token, 'getUserData')
+        const response = await getInfos(userId, token, 'getUserData')
         console.log('response:', response)
         dispatch(setUserInfos(response.userData[0]))
         }

@@ -63,10 +63,11 @@ const userSlice = createSlice({
       state.numberMessages = action.payload
     },
     setDefunctsList : (state, action)=>{
-      const {lastName,firstName} = action.payload
+      const {firstname,lastname, idDef} = action.payload
       state.defunctsList.push({
-        lastName : lastName || '',
-        firstName : firstName || ''
+        idDef : idDef || '',
+        lastname : lastname || '',
+        firstname : firstname || ''
       })
       },
       updateUserInfos : (state, action)=>{

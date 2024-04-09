@@ -1,28 +1,52 @@
-const CreateForm = ()=>{
+import { useForm } from "react-hook-form"
+import { selectToken, selectUserId } from "../features/selector"
+import {useSelector, useDispatch} from 'react-redux'
+import { setRegister } from "../services/api"
+import { setDefunctsList } from "../features/store"
+import {useNavigate} from 'react-router-dom'
+
+const Createform = ()=>{
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const id = useSelector(selectUserId)
+    const token = useSelector(selectToken)
+
+    const {register, handleSubmit} = useForm()
+    const saveDef = (data)=>{
+        const sendDefunct=async()=>{
+            const result =  await setRegister(id, token, data, 'setDefunct')
+            console.log('result:', result)
+            const idDef = result.result
+            dispatch(setDefunctsList({firstname:data.firstname,lastname: data.lastname,idDef: idDef}))
+            navigate('/homeUser')
+        }
+       sendDefunct()
+    }
+
     return(
         <>
         <section className="createform">
             <h1 className="createform__title">Créer une fiche</h1>
             <div className="createform__form">
-                <form method="POST" action="?page=createform" >
-                    <label for="lastname">Nom du defunt :</label>
-                    <input type="text" name="lastname" id="lastname" required="required"/>
-                    <label for="firstname">Prenom du defunt :</label>
-                    <input type="text" name="firstname" id="firstname" required="required"/>
-                    <label for="birthdate">Date de naissance :</label>
-                    <input type="date" name="birthdate" id="birthdate"/>
-                    <label for="city_birth">Ville :</label>
-                    <input type="text" name="city_birth" id="city_birth"/>
-                    <label for="death_date">Date de décès :</label>
-                    <input type="date" name="death_date" id="death_date" required="required"/>
-                    <label for="cemetery">Nom du cimetière :</label>
-                    <input type="text" name="cemetery" id="cemetery"/>
-                    <label for="city_death">Ville du cimetière :</label>
-                    <input type="text" name="city_death" id="city_death"/>
-                    <label for="postal_code">Code Postal du cimetière :</label>
-                    <input type="number" name="postal_code" id="postal_code"/>
+                <form onSubmit={handleSubmit(saveDef)} >  
+                    <label htmlFor="firstname">Prenom du defunt :</label>
+                    <input type="text" name="firstname" id="firstname" required {...register('firstname')}/>
+                    <label htmlFor="lastname">Nom du defunt :</label>
+                    <input type="text" name="lastname" id="lastname" required {...register('lastname')}/>
+                    <label htmlFor="birthdate">Date de naissance :</label>
+                    <input type="date" name="birthdate" id="birthdate" {...register('birthdate')}/>
+                    <label htmlFor="city_birth">Ville :</label>
+                    <input type="text" name="city_birth" id="city_birth" {...register('city_birth')}/>
+                    <label htmlFor="death_date">Date de décès :</label>
+                    <input type="date" name="death_date" id="death_date" required {...register('death_date')}/>
+                    <label htmlFor="cemetery">Nom du cimetière :</label>
+                    <input type="text" name="cemetery" id="cemetery" {...register('cemetery')}/>
+                    <label htmlFor="city_death">Ville du cimetière :</label>
+                    <input type="text" name="city_death" id="city_death" {...register('city_death')}/>
+                    <label htmlFor="postal_code">Code Postal du cimetière :</label>
+                    <input type="number" name="postal_code" id="postal_code" {...register('postal_code')}/>
                     <label>Qui êtes-vous pour le defunt ?</label>
-                    <select name="affinity">
+                    <select name="affinity" {...register('affinity')}>
                         <option>Affinité</option>
                         <option value="Conjoint">Conjoint</option>
                         <option value="Conjointe">Conjointe</option>
@@ -62,16 +86,15 @@ const CreateForm = ()=>{
                         <h3>Informations complémentaires</h3>
                         <p>Acceptez-vous de recevoir des cartes de condoléances pour ce defunt ?</p>
                         <label>Cartes par Email :</label> 
-                        Oui<input type="radio" name="card_virtuel" value="1"/>
-                        Non<input type="radio" name="card_virtuel" value="0"/>
+                        Oui<input type="radio" name="card_virtuel" value="1" {...register('card_virtuel', {setValueAs: (value) => value})}/>
+                        Non<input type="radio" name="card_virtuel" value="0" {...register('card_virtuel', {setValueAs: (value) => value})}/>
                         <label>Cartes par adresse Postal :</label>
-                        Oui<input type="radio" name="card_real" value="1"/>
-                        Non<input type="radio" name="card_real" value="0"/>
+                        Oui<input type="radio" name="card_real" value="1" {...register('card_real', {setValueAs: (value) => value})}/>
+                        Non<input type="radio" name="card_real" value="0" {...register('card_real', {setValueAs: (value) => value})}/>
                         <label>Acceptez-vous de recevoir des bouquets de fleurs pour ce defunt ?</label>
-                        Oui<input type="radio" name="flower" value="1"/>
-                        Non<input type="radio" name="flower" value="0"/>
+                        Oui<input type="radio" name="flower" value="1" {...register('flower', {setValueAs: (value) => value})}/>
+                        Non<input type="radio" name="flower" value="0" {...register('flower', {setValueAs: (value) => value})}/>
                     </fieldset>
-                    {/* <input type="hidden" name="token" value="<?=$token?>"> */}
                     <input className="button" type="submit" name="submit" value="Valider"/>
                 </form>
             </div>
@@ -82,4 +105,4 @@ const CreateForm = ()=>{
         </>
     )
 }
-export default CreateForm
+export default Createform

@@ -4,10 +4,9 @@ import { selectAuth } from "../features/selector"
 import '../index.css'
 
 
-
 const Template= (props)=>{
-
     const auth = useSelector(selectAuth)
+
     return (
     <>
         <div id="main__begin">
