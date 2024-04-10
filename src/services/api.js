@@ -1,3 +1,4 @@
+
 export async function signIn(data){
   try{
     const response = await fetch(`http://localhost:3000/api/user/signIn/setRegister`, {
@@ -41,9 +42,9 @@ export async function verifyAccount(data){
 }
 
 export async function getInfos(id, token, ctrl) {
-    console.log('token:', token)
+    // console.log('token:', token)
     // console.log('ctrl:', ctrl)
-     console.log('id:', id)
+    //  console.log('id:', id)
 
     if (!id) {
       return 'Missing data'
@@ -95,7 +96,7 @@ console.log('token:', token)
     }
   }
 
-  export async function updateInfosUser(id, photo, token, ctrl) {
+  export async function updatePhoto(id, idDef, photo, token, ctrl) {
     console.log('token:', token)
     // console.log('ctrl:', ctrl)
      console.log('id:', id)
@@ -108,7 +109,7 @@ console.log('token:', token)
       const response = await fetch(`http://localhost:3000/api/user/updater/${ctrl}`, {
           method: 'POST',
           headers: {'Content-Type': 'application/json','Authorization': `Bearer ${token}`},
-          body: JSON.stringify({id:id, photo:photo}),
+          body: JSON.stringify({id:id, idDef:idDef, photo:photo}),
       })
         if(response.ok){
           return 'update'
@@ -142,3 +143,21 @@ export async function setRegister(id, token, data, ctrl){
       }
     }
 
+    export async function updater(id, token, data, ctrl){
+
+      try{
+        const response = await fetch (`http://localhost:3000/api/user/updater/${ctrl}`,{
+          method: 'POST',
+          headers: {'Authorization': `Bearer ${token}`,'Content-Type': 'application/json'},
+          body:JSON.stringify({id:id, data:data}),
+        })
+        if (response.ok) {
+          const data = await response.json()
+          return data
+      } else {
+          return Promise.reject(new Error('Request failed'));
+      }
+        }catch(error){
+          return Promise.reject(error)
+        }
+    }

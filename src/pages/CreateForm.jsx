@@ -4,8 +4,11 @@ import {useSelector, useDispatch} from 'react-redux'
 import { setRegister } from "../services/api"
 import { setDefunctsList } from "../features/store"
 import {useNavigate} from 'react-router-dom'
+import { setFormatDate } from "../services/formatData"
+import { useUpperCaseFistLetter } from "../hooks/upperCaseFirstLetter"
 
 const Createform = ()=>{
+    const upperCaseFirstLetter = useUpperCaseFistLetter
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const id = useSelector(selectUserId)
@@ -30,19 +33,19 @@ const Createform = ()=>{
             <div className="createform__form">
                 <form onSubmit={handleSubmit(saveDef)} >  
                     <label htmlFor="firstname">Prenom du defunt :</label>
-                    <input type="text" name="firstname" id="firstname" required {...register('firstname')}/>
+                    <input type="text" name="firstname" id="firstname" required {...register('firstname', {setValueAs: (value)=>upperCaseFirstLetter(value)})}/>
                     <label htmlFor="lastname">Nom du defunt :</label>
-                    <input type="text" name="lastname" id="lastname" required {...register('lastname')}/>
+                    <input type="text" name="lastname" id="lastname" required {...register('lastname', {setValueAs: (value)=>upperCaseFirstLetter(value)})}/>
                     <label htmlFor="birthdate">Date de naissance :</label>
-                    <input type="date" name="birthdate" id="birthdate" {...register('birthdate')}/>
+                    <input type="date" name="birthdate" id="birthdate" {...register('birthdate',{setValueAs: (value) => setFormatDate(value)})}/>
                     <label htmlFor="city_birth">Ville :</label>
-                    <input type="text" name="city_birth" id="city_birth" {...register('city_birth')}/>
+                    <input type="text" name="city_birth" id="city_birth" {...register('city_birth', {setValueAs: (value)=>upperCaseFirstLetter(value)})}/>
                     <label htmlFor="death_date">Date de décès :</label>
-                    <input type="date" name="death_date" id="death_date" required {...register('death_date')}/>
+                    <input type="date" name="death_date" id="death_date" required {...register('death_date',{setValueAs: (value) => setFormatDate(value)})}/>
                     <label htmlFor="cemetery">Nom du cimetière :</label>
-                    <input type="text" name="cemetery" id="cemetery" {...register('cemetery')}/>
+                    <input type="text" name="cemetery" id="cemetery" {...register('cemetery', {setValueAs: (value)=>upperCaseFirstLetter(value)})}/>
                     <label htmlFor="city_death">Ville du cimetière :</label>
-                    <input type="text" name="city_death" id="city_death" {...register('city_death')}/>
+                    <input type="text" name="city_death" id="city_death" {...register('city_death', {setValueAs: (value)=>upperCaseFirstLetter(value)})}/>
                     <label htmlFor="postal_code">Code Postal du cimetière :</label>
                     <input type="number" name="postal_code" id="postal_code" {...register('postal_code')}/>
                     <label>Qui êtes-vous pour le defunt ?</label>

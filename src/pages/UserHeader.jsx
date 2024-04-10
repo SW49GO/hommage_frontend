@@ -3,11 +3,11 @@ import { selectDefunctsList, selectNumberFriends, selectNumberMessages, selectUs
 import { useSelector, useDispatch } from "react-redux"
 import { Link } from "react-router-dom"
 import { useState} from "react"
-import { setFiles, updateInfosUser} from "../services/api"
-import { updateUserInfos, setAuth, setDefunctsList, setDefIdSelected, setNumberFriends} from '../features/store'
-import { getInfos } from "../services/api"
+import { setFiles, updatePhoto, getInfos} from "../services/api"
+import { updateUserInfos, setAuth, setDefunctsList, setDefIdSelected, setNumberFriends, setSelectedDef} from '../features/store'
 import { useQuery } from 'react-query'
 import {useNavigate} from 'react-router-dom'
+
 
 
 const UserHeader = () =>{
@@ -16,59 +16,60 @@ const UserHeader = () =>{
     const fileInputRef = useRef(null)
     const infosUser = useSelector(selectUserInfos)
     const numberFriends = useSelector(selectNumberFriends)
-    console.log('numberFriends:', numberFriends)
-    const numberMessages = useSelector(selectNumberMessages)
+    let numberMessages = useSelector(selectNumberMessages)
     const defunctsList = useSelector(selectDefunctsList)
-    console.log('defunctsList:', defunctsList)
+    // State to open list of defuncts
     const [isOpen, setIsOpen]=useState(false)
     const toggleList = () => setIsOpen(!isOpen)
     // State to refresh navigator, useEffect can't used because name of image be always the same
     const [cacheBuster, setCacheBuster] = useState(0)
 
-    // const auth = useSelector(selectAuth)
     const token = useSelector(selectToken)
     const id = useSelector(selectUserId)
     const photoBDD = infosUser[0].photo
     const [image, setImage] = useState( photoBDD ?? './assets/site/noone.jpg' )
-    console.log('image:', image)
+    // console.log('image:', image)
+    /**
+     * Function to valide click on Image
+     */
     const handleImageClick = () => {
     fileInputRef.current.click()
     }
-
+    /**
+     * Function to Manage user photo profil
+     * @param {event} e 
+     */
     const handleFileChange = (e) => {
         async function saveFile (){
             const pathName = await setFiles(id, 0 ,'profil', token, e.target.files[0])
-            console.log('pathName:', pathName)
+            // console.log('pathName:', pathName)
             if(pathName){
                 setImage(pathName)
                 dispatch(updateUserInfos(pathName))
                 // To indicate the image has been change
                 setCacheBuster(prev => prev + 1)
-                updateInfosUser(id, pathName, token, 'updatePhotoProfil')
+                updatePhoto(id, 0, pathName, token, 'updatePhotoProfil')
             }
         }
         saveFile()
     }
-    // Defunct List
+    // Request for Defunct List
     const { data:defunctArray } = useQuery('infoDef', () => getInfos(id, token, 'getUserDefunctList'),
-    { retry:1,
-      onSuccess: (data) => {if (data) {
-        const newDefunctsList = data.result.map((item)=>({
-            idDef: item.id,
-            firstname: item.firstname,
-            lastname: item.lastname
-          }))
-          dispatch(setDefunctsList(newDefunctsList))
-      }}
+    {   retry:1,
+        onSuccess: (data) => {if (data) {
+            dispatch(setDefunctsList(data.result))
+        }},
+        onError:(err)=>{console.log(err)}
     })
-    console.log(defunctArray)
+    // console.log(defunctArray)
     // Active a new friend request since lastLog
     const {data:friends} = useQuery('newFriend',()=> getInfos(id,token, 'getAskFriend'),
-    { retry:1,
+    {   retry:1,
         onSuccess: (friends)=> {
-            console.log('inside',friends.friends)
+            // console.log('inside',friends.friends)
             dispatch(setNumberFriends(friends.friends.length))
-        }
+        },
+        onError:(err)=>{console.log(err)}
     })
 
     // Activate icon if new friends
@@ -76,7 +77,34 @@ const UserHeader = () =>{
     if(numberFriends!==0){
         icon_anim_f = 'icon_anim'
     }
-console.log('friends',friends)
+// console.log('friends',friends)
+
+    // Active a new Message request since lastLog
+    const {data : tchat} = useQuery('newMessage',()=> getInfos(id,token, 'getNewTchat'),
+    {   retry:1,
+        onSuccess: (message)=> {
+            // console.log('inside',message.result.length)
+            dispatch(setNumberFriends(message.result.length))
+        },
+        onError:(err)=>{console.log(err)}
+    })
+
+    // Activate icon if new friends
+    let icon_anim_m
+    if(numberMessages!==0){
+        icon_anim_m = 'icon_anim'
+    }
+    // console.log('messages',tchat)
+    /**
+     * Function to retrieve the id of the Defunct selected
+     * @param {number} idDef 
+     */
+    const selectedDefunct= (idDef)=>{
+        dispatch(setDefIdSelected(idDef))
+        const selectedDef = defunctsList.filter((item)=>(item.id===idDef))
+        dispatch(setSelectedDef(selectedDef))
+        navigate('/modifyDef')
+    }
     return(
         <>
         <section className="user">
@@ -96,7 +124,7 @@ console.log('friends',friends)
                         <span className="number_f">{numberFriends}</span>
                     </Link>
                     <Link to={'/contact'} className="user__mini_icons" id="newMessage" title="Nouveau message">
-                        <img className="img dim40 <?=$icon_anim_m?>" src="./assets/site/chat.png" alt="icone nouveau message"/>
+                        <img className={`img dim40 ${icon_anim_m}`} src="./assets/site/chat.png" alt="icone nouveau message"/>
                         <span className="number_m">{numberMessages}</span>
                     </Link>
                 </div>
@@ -120,20 +148,13 @@ console.log('friends',friends)
                    <span>Modifier une fiche</span>
                    {isOpen && <div className='user__list_defuncts'>
                      {defunctsList.map((item)=>(
-                          <p key={item.idDef} onClick={()=>{setDefIdSelected(item.idDef); navigate('/modifyDef')}}>{item.lastname} {item.firstname}</p>
+                          <p key={item.id} onClick={()=>{selectedDefunct(item.id)}}>{item.lastname} {item.firstname}</p>
                         ))}
                         </div>}
                         </div></>
                     : <Link className="user__button_menu"to="/search">Rechercher une fiche</Link>}
                 <Link className="user__button_menu" to="/profil">Mon compte</Link>
                 <Link className="user__button_menu" to="/search">Rechercher</Link>
-        </section>
-        <section>
-                <div>
-                    {/* <?=$messFile?> */}
-                </div>
-                <div className="user__ask_friend">
-                </div>
         </section>
         </>
     )

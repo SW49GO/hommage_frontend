@@ -41,6 +41,7 @@ const userSlice = createSlice({
   initialState: {
     userInfos:[],
     defunctsList: [],
+    defunctSelected:[],
     numberFriends : 0,
     numberMessages: 0
   },
@@ -69,6 +70,9 @@ const userSlice = createSlice({
     setDefunctsList : (state, action)=>{
       state.defunctsList = action.payload
       },
+    setSelectedDef : (state,action)=>{
+      state.defunctSelected =action.payload
+      },
     updateUserInfos : (state, action)=>{
       state.userInfos[0].photo = action.payload
     }
@@ -78,7 +82,7 @@ const userSlice = createSlice({
 const utilSlice = createSlice({
   name: 'utilSlice',
   initialState: {
-    idDefIdSelected:null,
+    idDefIdSelected: null,
   },
   reducers: {
     setDefIdSelected : (state,action)=>{
@@ -88,7 +92,7 @@ const utilSlice = createSlice({
 })
 
 export const {setAuth, setToken,setId, setPwd} = authSlice.actions
-export const {setUserInfos, setNumberFriends, setNumberMessages, setDefunctsList,updateUserInfos} = userSlice.actions
+export const {setUserInfos, setNumberFriends, setNumberMessages, setDefunctsList,updateUserInfos,setSelectedDef} = userSlice.actions
 export const {setDefIdSelected} = utilSlice.actions
 
 const authPersistSlice = persistReducer(sessionStorageAuth, authSlice.reducer)
