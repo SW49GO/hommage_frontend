@@ -27,7 +27,7 @@ const UserHeader = () =>{
     const token = useSelector(selectToken)
     const id = useSelector(selectUserId)
     const photoBDD = infosUser[0].photo
-    const [image, setImage] = useState( photoBDD ?? './assets/site/noone.jpg' )
+    const [image, setImage] = useState(photoBDD !== '' ? photoBDD : './assets/site/noone.jpg')
     // console.log('image:', image)
     /**
      * Function to valide click on Image
@@ -65,9 +65,10 @@ const UserHeader = () =>{
     // Active a new friend request since lastLog
     const {data:friends} = useQuery('newFriend',()=> getInfos(id,token, 'getAskFriend'),
     {   retry:1,
-        onSuccess: (friends)=> {
+        onSuccess: (friends)=> { if (friends){
             // console.log('inside',friends.friends)
             dispatch(setNumberFriends(friends.friends.length))
+        }
         },
         onError:(err)=>{console.log(err)}
     })
@@ -82,9 +83,10 @@ const UserHeader = () =>{
     // Active a new Message request since lastLog
     const {data : tchat} = useQuery('newMessage',()=> getInfos(id,token, 'getNewTchat'),
     {   retry:1,
-        onSuccess: (message)=> {
+        onSuccess: (message)=> { if (message){
             // console.log('inside',message.result.length)
             dispatch(setNumberFriends(message.result.length))
+        }
         },
         onError:(err)=>{console.log(err)}
     })
@@ -111,7 +113,8 @@ const UserHeader = () =>{
             <h3>{infosUser[0].pseudo ? infosUser[0].pseudo: `${infosUser[0].lastname}' '${infosUser[0].firstname}`}</h3>
             <form className="user__form" encType="multipart/form-data" id="form_user">
                 <div className="user__photo">
-                    <img className="img" src={`http://localhost:3000/${image}?cache=${cacheBuster}`} alt="user"/>
+                    {photoBDD!=='' ?<img className="img" src={`http://localhost:3000/${image}?cache=${cacheBuster}`} alt="user"/>:<img className="img" src={`${image}?cache=${cacheBuster}`} alt="user"/>}
+                    
                     <input type="file" name="file" id="photo_user" ref={fileInputRef} onChange={handleFileChange}/>
                     <img className="img dim35 user__icon" src="./assets/site/camera-icon.png" alt="icone home utilisateur" onClick={handleImageClick}/>
                 </div>

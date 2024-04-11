@@ -16,11 +16,15 @@ const Createform = ()=>{
 
     const {register, handleSubmit} = useForm()
     const saveDef = (data)=>{
+        console.log('data:', data)
         const sendDefunct=async()=>{
             const result =  await setRegister(id, token, data, 'setDefunct')
             console.log('result:', result)
             const idDef = result.result
             dispatch(setDefunctsList({firstname:data.firstname,lastname: data.lastname,idDef: idDef}))
+            data.defunct_id = idDef
+            const adminResult = await setRegister(id, token, data,'setUserAdmin')
+            console.log('adminresult:', adminResult)
             navigate('/homeUser')
         }
        sendDefunct()

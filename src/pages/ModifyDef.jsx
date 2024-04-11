@@ -8,6 +8,7 @@ import Error from '../pages/Error'
 import { updater } from '../services/api'
 import { useUpperCaseFistLetter } from '../hooks/upperCaseFirstLetter'
 import {useNavigate} from 'react-router-dom'
+import { deleter } from '../services/api'
 
 const ModifyDef=()=>{
     const navigate = useNavigate()
@@ -64,6 +65,14 @@ const ModifyDef=()=>{
         updateDefInfos(data)
         navigate('/homeUser')
     }
+    async function deleteDef(idDef){
+        console.log('deleter')
+        if(idDef){
+            await deleter(id,idDef,token,'deleteOneDefunct')
+        }
+
+    }
+
     if(infosDefunct){
     return(
         <>
@@ -102,6 +111,8 @@ const ModifyDef=()=>{
                     <p className="message">Modifier les champs que vous souhaitez mettre à jour</p>
                     <input className="button" type="submit" name="submitmodif" value="Modifier"/>
                 </form>
+                <button className="button button-a" onClick={()=>{deleteDef(idDef)}}>Supprimer cette fiche</button>
+                <button className="button button-a">Transférer cette fiche</button>
             </div>
         </section>
     </>

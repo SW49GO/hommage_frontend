@@ -399,6 +399,9 @@ cursor: pointer;
   padding: 0.5rem;
   margin: 1.25rem auto;
 }
+.profil__admin-listDef{
+  padding: 0.5rem;
+}
 .profil__message {
   font-size: 0.8rem;
 }
@@ -433,6 +436,7 @@ input[name="new_user"], input[name="new_admin"]{
 /********************************REGISTRATION***********************************/
 /*******************************************************************************/
 .register {
+  position:relative;
   text-align: center;
 }
 .register__title {
@@ -441,6 +445,22 @@ input[name="new_user"], input[name="new_admin"]{
 .register__pwd {
   font-size: 0.7rem;
 }
+.confirm{
+  position: absolute;
+  top: 59rem;
+  left: 32%;
+  background-color: var(--color-blue-hard);
+  z-index: 10;
+  width: 30rem;
+  height: 10rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  color: #fff;
+  font-size: 2rem;
+  align-items: center;
+}
+
 /*******************************************************************************/
 /***********************************SEARCH**************************************/
 /*******************************************************************************/

@@ -161,3 +161,22 @@ export async function setRegister(id, token, data, ctrl){
           return Promise.reject(error)
         }
     }
+
+    export async function deleter(id, idDef, token, ctrl){
+
+      try{
+        const response = await fetch (`http://localhost:3000/api/user/deleter/${ctrl}`,{
+          method: 'POST',
+          headers: {'Authorization': `Bearer ${token}`,'Content-Type': 'application/json'},
+          body:JSON.stringify({id:id, idDef:idDef}),
+        })
+        if (response.ok) {
+          const data = await response.json()
+          return data
+      } else {
+          return Promise.reject(new Error('Request failed'));
+      }
+        }catch(error){
+          return Promise.reject(error)
+        }
+    }

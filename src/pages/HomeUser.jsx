@@ -8,13 +8,11 @@ import Error from "./Error"
 
 const HomeUser=()=>{
     const dispatch = useDispatch()
-    const userId = useSelector(selectUserId)
-    console.log('userId:', userId)
+    const id = useSelector(selectUserId)
     const token = useSelector(selectToken)
-    console.log('tokenHome:', token)
     const auth = useSelector(selectAuth)
 
-    const { data } = useQuery('infoUser', () => getInfos(userId, token, 'getUserData'),
+    const { data } = useQuery('infoUser', () => getInfos(id, token, 'getUserData'),
     { retry:1,
       onSuccess: (data) => {if (data) {
         dispatch(setUserInfos(data.userData[0]))

@@ -1,38 +1,58 @@
+import { useForm } from "react-hook-form"
+import { useUpperCaseFistLetter } from "../hooks/upperCaseFirstLetter"
+import { signIn } from "../services/api"
+import {useNavigate, Link} from 'react-router-dom'
+import { useState } from "react"
+
 const Register= () =>{
-    return (
-         <div className="register">
+    const {register, handleSubmit} =useForm()
+    const navigate = useNavigate()
+    const upperCaseFirstLetter = useUpperCaseFistLetter
+    const [isOpen, setIsOpen] = useState(false)
+    const dataForm = (data) =>{
+        async function signRegister(){
+            await signIn(data)
+            setIsOpen(true)
+        }
+        signRegister()
+    }
+    return (<>
+         <div className="register" style={isOpen ? { filter: 'blur(0.513rem)' } : {}}>
             <h1 className="register__title">Inscription</h1>
             <div className="register__htmlForm">
-                <form>
-                    <label htmlFor="lastName">Nom:</label>
-                    <input type="text" name="lastName" id="lastname" required="required"/>
-                    <label htmlFor="firstName">Prenom:</label>
-                    <input type="text" name="firstName" id="firstname" required="required"/>
+                <form onSubmit={handleSubmit(dataForm)}>
+                    <label htmlFor="lastname">Nom:</label>
+                    <input type="text" name="lastname" id="lastname" required {...register('lastname', {setValueAs: (value)=>upperCaseFirstLetter(value)})}/>
+                    <label htmlFor="firstname">Prenom:</label>
+                    <input type="text" name="firstname" id="firstname" required {...register('firstname', {setValueAs: (value)=>upperCaseFirstLetter(value)})}/>
                     <label htmlFor="pseudo">Pseudo:</label>
-                    <input type="text" name="pseudo" id="pseudo"/>
-                    <label htmlFor="numberRoad">N° de rue:</label>
-                    <input type="number" name="numberRoad" id="number"/>
+                    <input type="text" name="pseudo" id="pseudo" {...register('pseudo', {setValueAs: (value)=>upperCaseFirstLetter(value)})}/>
+                    <label htmlFor="number_road">N° de rue:</label>
+                    <input type="number" name="number_road" id="number" {...register('number_road', {setValueAs: (value)=>upperCaseFirstLetter(value)})}/>
                     <label htmlFor="address">Adresse:</label>
-                    <input type="text" name="address" id="address"/>
-                    <label htmlFor="cp">Code postal:</label>
-                    <input type="number" name="cp" id="cp"/>
+                    <input type="text" name="address" id="address" {...register('address', {setValueAs: (value)=>upperCaseFirstLetter(value)})}/>
+                    <label htmlFor="postal_code">Code postal:</label>
+                    <input type="number" name="postal_code" id="postal_code" {...register('postal_code', {setValueAs: (value)=>upperCaseFirstLetter(value)})}/>
                     <label htmlFor="city">Ville:</label>
-                    <input type="text" name="city" id="city"/>
+                    <input type="text" name="city" id="city" {...register('city', {setValueAs: (value)=>upperCaseFirstLetter(value)})}/>
                     <label htmlFor="email">Email:</label>
-                    <input type="email" name="email" id="email" required="required"/>
+                    <input type="email" name="email" id="email" required {...register('email')}/>
                     <label htmlFor="pwd">Mot de passe:</label>
-                    <input type="password" name="pwd" id="pwd" required="required"/>
+                    <input type="password" name="password" id="pwd" required {...register('password')}/>
                     <p className="register__pwd">[minimum 5 caractères dont un Nombre, une Majuscule et un caractère spécial (!@#$%€£)]</p>
-                    <input type="hidden" name="token" value="<?=$token?>"/>
                     <div className="buttons">
-                        <input className="button" type="submit" name="submit" value="Valider"/>
+                        <input className="button" type="submit" value="Valider"/>
                     </div>
                 </form>
             </div>
-            <div className="confirm">
-               
+        </div> 
+        <div className="confirm">
+            {isOpen && <div className="confirm__signIn">
+                <p>Inscription validée !</p>
+                <Link className="button button-a" to={'/connexion'}>Se Connecter</Link>
+                </div>}
             </div>
-        </div>
+            </>
     )
 }
 export default Register
