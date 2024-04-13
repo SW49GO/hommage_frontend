@@ -1,23 +1,27 @@
-import { getInfos } from "../services/api"
-import { setUserInfos } from "../features/store"
-import { selectAuth, selectToken, selectUserId } from "../features/selector"
-import { useQuery } from 'react-query'
+import { selectAuth, selectDefunctsList, selectUserInfos } from "../features/selector"
 import { useSelector, useDispatch} from "react-redux"
 import UserHeader from "./UserHeader"
 import Error from "./Error"
+import React, { useEffect, useState } from "react"
+import { setDefIdSelected } from "../features/store"
+import { useNavigate } from "react-router-dom"
 
 const HomeUser=()=>{
-    const dispatch = useDispatch()
-    const id = useSelector(selectUserId)
-    const token = useSelector(selectToken)
+    const dispatch=useDispatch()
+    const navigate = useNavigate()
+    const data = useSelector(selectUserInfos)
     const auth = useSelector(selectAuth)
-
-    const { data } = useQuery('infoUser', () => getInfos(id, token, 'getUserData'),
-    { retry:1,
-      onSuccess: (data) => {if (data) {
-        dispatch(setUserInfos(data.userData[0]))
-      }}
-    })
+    const defunctsList = useSelector(selectDefunctsList)
+    console.log('defunctList:', defunctsList)
+    // State to update list of defunct
+    const [hasDefuncts, setHasDefuncts] = useState(false)
+    useEffect(()=>{
+        if(defunctsList.length>0){
+            setHasDefuncts(true)
+        }else{
+            setHasDefuncts(false)
+        }
+    },[defunctsList])
 
     if(data){
         return (
@@ -28,21 +32,25 @@ const HomeUser=()=>{
                 {/* <?=$message?> */}
             </div>
             <div className="home_user__list">
-                {/* <?=$list_def?> */}
+                {hasDefuncts ? <div><h3>Liste de défunts que vous gérez</h3>
+                    { defunctsList.map(( item)=>(
+                            <p key={item.id} onClick={()=>{dispatch(setDefIdSelected(item.id)); navigate('/environment')}} className="button" style={{margin:'0.2rem'}}>{item.lastname} {item.firstname}</p>
+                            ))}
+                </div>: <div></div>}
             </div>
             <hr/>
             </section>
             <section>
                 <div className="home_user__contact" id="contacts">
                     <a href="?page=home_user#contacts">
-                        <img className="img dim200" src="public/pictures/site/contact.png" alt="Dossier de contacts"/>
+                        <img className="img dim200" src="./assets/site/contact.png" alt="Dossier de contacts"/>
                     </a>
                 </div>
                 <div className="home_user__contact_list <?=$show?>">
                         {/* <?=$friends?> */}
                 </div>
                 <div className="home_user__contact_title">
-                    <img className="img dim35" src="public/pictures/site/arrow_up.png" alt="lien flèche haut"/>
+                    <img className="img dim35" src="./assets/site/arrow_up.png" alt="lien flèche haut"/>
                     <h2>Mes Contacts -- Tchat</h2>
                 </div>
                 <hr/>

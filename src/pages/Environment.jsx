@@ -1,4 +1,4 @@
-import { selectToken, selectUserId } from "../features/selector"
+import { selectDefunctsList, selectIdDef, selectToken, selectUserId } from "../features/selector"
 import { getInfos } from "../services/api"
 import { useQuery } from 'react-query'
 import {useSelector} from 'react-redux'
@@ -7,13 +7,17 @@ import { Link } from "react-router-dom"
 const Environment=()=>{
     const id = useSelector(selectUserId)
     const token = useSelector(selectToken)
-    const { data } = useQuery('infoDef', () => getInfos(id, token, 'getUserDefunctList'),
-    { retry:1,
-      onSuccess: (data) => {if (data) {
-        console.log('data:', data.result)
-        // dispatch(setUserInfos(data.userData[0]))
-      }}
-    })
+    // const { data } = useQuery('infoDef', () => getInfos(id, token, 'getUserDefunctList'),
+    // { retry:1,
+    //   onSuccess: (data) => {if (data) {
+    //     console.log('data:', data.result)
+    //     // dispatch(setUserInfos(data.userData[0]))
+    //   }}
+    // })
+    const defunctsList = useSelector(selectDefunctsList)
+    const idDef = useSelector(selectIdDef) 
+    const defunct = defunctsList.filter((item)=>(item.id===idDef))
+    console.log('defunct:', idDef)
 
     return(
         <>
@@ -21,16 +25,16 @@ const Environment=()=>{
             <div className="env">
             {/* Lien de la fiche d'un défunt */}
                 <div className="env__link">
-                    <a className="env__link_img" href="?page=environment&id_def=<?=$defunct_infos['id']?>" title="Lien vers cette fiche">
+                    {/* <Link className="env__link_img" href="?page=environment&id_def=<?=$defunct_infos['id']?>" title="Lien vers cette fiche">
                         <img className="img dim35" src="./assets/site/link-icon.png" alt="icone lien"/>
-                    </a>
+                    </Link> */}
                 </div>
             {/* <?php endif ?> */}
-                {/* <h2 className="env__title" ><?=$defunct_infos['firstname'].' '.$defunct_infos['lastname'] ?></h2> */}
+                <h2 className="env__title" >{defunct[0].firstname} {defunct[0].lastname}</h2>
                 <div className="env__date">
-                    {/* <h4><?=$defunct_infos['birthdate'].' '?></h4> */}
-                    <img className="img dim40" src="public/pictures/site/cross.png" alt="croix"/>
-                    {/* <h4><?=' '.$defunct_infos['death_date']?></h4> */}
+                    {defunct[0].birthdate? <h4>{defunct[0].birthdate}</h4>: <h4>Naissance non définie</h4>}
+                    <img className="img dim40" src="./assets/site/cross.png" alt="croix"/>
+                    {<h4>{defunct[0].death_date}</h4>}
                 </div>
                 <hr/>
             {/* <?php  */}
@@ -38,22 +42,21 @@ const Environment=()=>{
             {/* if (isset($_SESSION['user']['id'])) :?> */}
             <Link className="env__folder_link" href="" title="Dossier de stockage des photos">
                 <div className="env__folder">
-                    <img className="img" src="public/pictures/site/folder.png" alt="Dossier de stockage photos"/>
+                    <img className="img" src="./assets/site/folder.png" alt="Dossier de stockage photos"/>
                 </div>
                 <div>
-                    {/* <p>Cliquez sur le Dossier pour telecharger les photos de <?=$defunct_infos['firstname'].' '.$defunct_infos['lastname'] ?></p> */}
+                    <p>Cliquez sur le Dossier pour telecharger les photos de {defunct[0].firstname} {defunct[0].lastname}</p>
                 </div>
             </Link>
             {/* <?php  */}
     {/* // Identifiant du créateur de la fiche + ajout icone ami si pas dans la liste de l'utilisateur */}
-                {/* if (isset($defunct_infos['user_id']) && $defunct_infos['user_id'] != $_SESSION['user']['id']) :?> */}
             <div className="env__add_friend">
                 <p><u>Gestionnaire de la fiche :</u></p>
                 <div className="admin_user">
                     {/* <?=$user_admin['admin']['lastname'].' '.$user_admin['admin']['firstname'].' <em>('.$user_admin['admin']['affinity'].')</em>'?> */}
                 {/* <?php if ($friendOk == false) :?> */}
                     <a className="friend" href="?page=environment&id_def=<?=$id_def?>&friend_add=<?=$defunct_infos['user_id']?>" title="Ajouter aux contacts">
-                        <img className="img dim20 friend_add" src="public/pictures/site/friend.png" alt="icone ajouter"/>
+                        <img className="img dim20 friend_add" src="./assets/site/friend.png" alt="icone ajouter"/>
                     </a>
                 </div>
                 {/* <?php endif ?> */}
@@ -118,7 +121,7 @@ const Environment=()=>{
                 <div className="container_lastP hidden" >
                     <div className="last_photos">
                         <a href="#<?=$r['id']?>">
-                            <img className="img" src="public/pictures/photos/<?=$r['user_id']?>/<?=$r['name']?>" alt="<?=$r['name']?>"/>
+                            <img className="img" src="p./assets/photos/<?=$r['user_id']?>/<?=$r['name']?>" alt="<?=$r['name']?>"/>
                         </a>
                     </div>
                 </div>
@@ -128,7 +131,7 @@ const Environment=()=>{
     {/* //Supprimer une photo dont on est l'auteur */}
                 {/* if (isset($_SESSION['user']['id']) && isset($r['user_id']) && $_SESSION['user']['id'] == $r['user_id']): ?> */}
                 <a className="env__delete_photo" href="?page=environment&idPhoto=<?=$r['id']?>&id=<?=$id_def?>" title="Supprimer">
-                    <img className="dim20" src="public/pictures/site/delete-icon.png" alt="Supprimer"/>
+                    <img className="dim20" src="./assets/site/delete-icon.png" alt="Supprimer"/>
                 </a>
             {/* <?php endif ?> */}
                 <div id="<?=$r['id']?>">

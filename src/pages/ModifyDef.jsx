@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import {useForm} from 'react-hook-form'
-import { selectDefunct,  selectUserId, selectToken, selectIdDef} from '../features/selector'
-import {useSelector} from 'react-redux'
+import { selectDefunct,  selectUserId, selectToken, selectIdDef, selectDefunctsList} from '../features/selector'
+import {useSelector, useDispatch} from 'react-redux'
 import { setFormatDate } from '../services/formatData'
 import { setFiles, updatePhoto } from '../services/api'
 import Error from '../pages/Error'
@@ -9,8 +9,10 @@ import { updater } from '../services/api'
 import { useUpperCaseFistLetter } from '../hooks/upperCaseFirstLetter'
 import {useNavigate} from 'react-router-dom'
 import { deleter } from '../services/api'
+import { setDefunctsList, setSelectedDef } from '../features/store'
 
 const ModifyDef=()=>{
+    const dispatch=useDispatch()
     const navigate = useNavigate()
     const upperCaseFirstLetter= useUpperCaseFistLetter
     const token = useSelector(selectToken)
@@ -18,6 +20,9 @@ const ModifyDef=()=>{
     const {register, handleSubmit} = useForm()
     const fileInputRef = useRef(null)
     const infosDefunct = useSelector(selectDefunct)
+    console.log('infosDefunct:', infosDefunct)
+    const defunctList = useSelector(selectDefunctsList)
+    console.log('defunctList:', defunctList)
     const idDef = useSelector(selectIdDef)
 
     // State to refresh navigator, useEffect can't used because name of image be always the same
@@ -37,12 +42,14 @@ const ModifyDef=()=>{
             const pathName = await setFiles(id, idDef ,'defProfil', token, e.target.files[0])
             if(pathName){
                const modifPhotoStore = {...infosDefunct, photo: pathName}
+               console.log('modifPhotoStore:', modifPhotoStore)
                 async function savePhoto (modifPhoto){
                     await updatePhoto(id, idDef,  modifPhoto, token,'updateDefPhoto')
                 }
-                savePhoto(modifPhotoStore)
+                savePhoto(modifPhotoStore) 
                 // To indicate the image has been change
                 setCacheBuster(prev => prev + 1)
+                dispatch(setSelectedDef([modifPhotoStore]))
             }
         }
         saveFile()
@@ -69,8 +76,14 @@ const ModifyDef=()=>{
         console.log('deleter')
         if(idDef){
             await deleter(id,idDef,token,'deleteOneDefunct')
+            function removeItemById(defunctList, idToRemove) {
+                return defunctList.filter(item => item.id !== idToRemove);
+            }
+            const newDefunctList = removeItemById(defunctList, idDef)
+            dispatch(setDefunctsList(newDefunctList))
+            dispatch(setSelectedDef([]))
+            navigate('/homeUser')
         }
-
     }
 
     if(infosDefunct){
@@ -82,7 +95,7 @@ const ModifyDef=()=>{
                 <h3>{infosDefunct.lastname} {infosDefunct.firstname}</h3>
                 <form id="modifydef" encType="multipart/form-data">
                     <div className="modifydef__form">
-                        {infosDefunct ?
+                        {infosDefunct.photo !=="" ?
                             <img className="img dim200" src={`http://localhost:3000/${infosDefunct.photo}?cache=${cacheBuster}`} alt="profil"/>:<img className="img dim200" src="./assets/site/noone.jpg" alt="profil"/>
                         }
   

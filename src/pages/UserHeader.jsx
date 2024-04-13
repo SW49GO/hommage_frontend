@@ -1,23 +1,38 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { selectDefunctsList, selectNumberFriends, selectNumberMessages, selectUserInfos,selectToken, selectUserId} from "../features/selector"
 import { useSelector, useDispatch } from "react-redux"
 import { Link } from "react-router-dom"
 import { useState} from "react"
 import { setFiles, updatePhoto, getInfos} from "../services/api"
 import { updateUserInfos, setAuth, setDefunctsList, setDefIdSelected, setNumberFriends, setSelectedDef} from '../features/store'
-import { useQuery } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 import {useNavigate} from 'react-router-dom'
 
 
 
 const UserHeader = () =>{
+    const queryClient = useQueryClient()
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const fileInputRef = useRef(null)
     const infosUser = useSelector(selectUserInfos)
+    //  console.log('infosUser:', infosUser)
     const numberFriends = useSelector(selectNumberFriends)
     let numberMessages = useSelector(selectNumberMessages)
     const defunctsList = useSelector(selectDefunctsList)
+    // State for menu defunctList
+    const [hasDefuncts, setHasDefuncts] = useState(false)
+
+    // Check defunctList change to update the menu of Defunct
+    useEffect(() => {
+        if (Object.keys(defunctsList).length > 0) {
+            setHasDefuncts(true)
+            queryClient.invalidateQueries('infoDef')
+        } else {
+            setHasDefuncts(false)
+        }
+    }, [defunctsList, queryClient])
+ 
     // State to open list of defuncts
     const [isOpen, setIsOpen]=useState(false)
     const toggleList = () => setIsOpen(!isOpen)
@@ -26,9 +41,13 @@ const UserHeader = () =>{
 
     const token = useSelector(selectToken)
     const id = useSelector(selectUserId)
-    const photoBDD = infosUser[0].photo
-    const [image, setImage] = useState(photoBDD !== '' ? photoBDD : './assets/site/noone.jpg')
+    let photoBDD
+    if(infosUser[0]){
+        photoBDD = infosUser[0].photo
+    }
+    const [image, setImage] = useState(photoBDD !== '' ? photoBDD : 'assets/site/noone.jpg')
     // console.log('image:', image)
+
     /**
      * Function to valide click on Image
      */
@@ -57,10 +76,13 @@ const UserHeader = () =>{
     const { data:defunctArray } = useQuery('infoDef', () => getInfos(id, token, 'getUserDefunctList'),
     {   retry:1,
         onSuccess: (data) => {if (data) {
+            if(data.result.length>0){
+            }
             dispatch(setDefunctsList(data.result))
         }},
         onError:(err)=>{console.log(err)}
     })
+ 
     // console.log(defunctArray)
     // Active a new friend request since lastLog
     const {data:friends} = useQuery('newFriend',()=> getInfos(id,token, 'getAskFriend'),
@@ -107,59 +129,60 @@ const UserHeader = () =>{
         dispatch(setSelectedDef(selectedDef))
         navigate('/modifyDef')
     }
-    return(
-        <>
-        <section className="user">
-            <h3>{infosUser[0].pseudo ? infosUser[0].pseudo: `${infosUser[0].lastname}' '${infosUser[0].firstname}`}</h3>
-            <form className="user__form" encType="multipart/form-data" id="form_user">
-                <div className="user__photo">
-                    {photoBDD!=='' ?<img className="img" src={`http://localhost:3000/${image}?cache=${cacheBuster}`} alt="user"/>:<img className="img" src={`${image}?cache=${cacheBuster}`} alt="user"/>}
-                    
-                    <input type="file" name="file" id="photo_user" ref={fileInputRef} onChange={handleFileChange}/>
-                    <img className="img dim35 user__icon" src="./assets/site/camera-icon.png" alt="icone home utilisateur" onClick={handleImageClick}/>
+    if(infosUser[0]){
+        return(
+            <>
+            <section className="user">
+                <h3>{infosUser[0].pseudo ? infosUser[0].pseudo: `${infosUser[0].lastname}' '${infosUser[0].firstname}`}</h3>
+                <form className="user__form" encType="multipart/form-data" id="form_user">
+                    <div className="user__photo">
+                        {photoBDD!=='' ?<img className="img" src={`http://localhost:3000/${image}?cache=${cacheBuster}`} alt="user"/>:<img className="img" src={`${image}?cache=${cacheBuster}`} alt="user"/>}
+                        <input type="file" name="file" id="photo_user" ref={fileInputRef} onChange={handleFileChange}/>
+                        <img className="img dim35 user__icon" src="./assets/site/camera-icon.png" alt="icone home utilisateur" onClick={handleImageClick}/>
+                    </div>
+                </form>
+                <div className="user__icons">
+                    <div className="user__new">
+                        <Link to={'/tchat'} className="user__mini_icons" id="newFriend" title="Demande d'ami">
+                            <img className={`img dim40 ${icon_anim_f}`} src="./assets/site/friend.png" alt="icone demande d'ami"/>
+                            {/* <img className="img dim40 <?=$icon_anim_f?>" */}
+                            <span className="number_f">{numberFriends}</span>
+                        </Link>
+                        <Link to={'/contact'} className="user__mini_icons" id="newMessage" title="Nouveau message">
+                            <img className={`img dim40 ${icon_anim_m}`} src="./assets/site/chat.png" alt="icone nouveau message"/>
+                            <span className="number_m">{numberMessages}</span>
+                        </Link>
+                    </div>
+                    <div className="user__fix">
+                        <Link to="/" className="user__mini_icons" title="Déconnecter" onClick={()=>{localStorage.removeItem('persist:localStorageUser');localStorage.removeItem('persist:localStorageAuth');localStorage.removeItem('persist:localStorageUtil') ;dispatch(setAuth(false))}}>
+                                <img className="img dim40" src="./assets/site/power-icon.png" alt="icone deconnexion"/>
+                        </Link>
+                        <Link to="/environment" className="user__mini_icons" title="Environnement utilisateur">
+                                <img className="img dim40" src="./assets/site/environment-icon.png" alt="icone environnement utilisateur"/>
+                        </Link>
+                        <Link to="/homeUser" className="user__mini_icons" title="Accueil utilisateur">
+                                <img className="img dim40" src="./assets/site/home-icon.png" alt="icone home utilisateur"/>
+                        </Link>
+                    </div>
                 </div>
-            </form>
-            <div className="user__icons">
-                <div className="user__new">
-                    <Link to={'/tchat'} className="user__mini_icons" id="newFriend" title="Demande d'ami">
-                        <img className={`img dim40 ${icon_anim_f}`} src="./assets/site/friend.png" alt="icone demande d'ami"/>
-                        {/* <img className="img dim40 <?=$icon_anim_f?>" */}
-                        <span className="number_f">{numberFriends}</span>
-                    </Link>
-                    <Link to={'/contact'} className="user__mini_icons" id="newMessage" title="Nouveau message">
-                        <img className={`img dim40 ${icon_anim_m}`} src="./assets/site/chat.png" alt="icone nouveau message"/>
-                        <span className="number_m">{numberMessages}</span>
-                    </Link>
-                </div>
-                <div className="user__fix">
-                    <Link to="/" className="user__mini_icons" title="Déconnecter" onClick={()=>{dispatch(setAuth(false))}}>
-                            <img className="img dim40" src="./assets/site/power-icon.png" alt="icone deconnexion"/>
-                    </Link>
-                    <Link to="/environment" className="user__mini_icons" title="Environnement utilisateur">
-                            <img className="img dim40" src="./assets/site/environment-icon.png" alt="icone environnement utilisateur"/>
-                    </Link>
-                    <Link to="/homeUser" className="user__mini_icons" title="Accueil utilisateur">
-                            <img className="img dim40" src="./assets/site/home-icon.png" alt="icone home utilisateur"/>
-                    </Link>
-                </div>
-            </div>
-        </section>
-        <section className="user__menu">
-                <Link to="/createForm" className="user__button_menu" >Créer une fiche</Link>
-                {defunctsList.length>0 ? 
-                <><div className ="user__button_menu user__myDefuncts" onClick={toggleList}>
-                   <span>Modifier une fiche</span>
-                   {isOpen && <div className='user__list_defuncts'>
-                     {defunctsList.map((item)=>(
-                          <p key={item.id} onClick={()=>{selectedDefunct(item.id)}}>{item.lastname} {item.firstname}</p>
-                        ))}
-                        </div>}
-                        </div></>
-                    : <Link className="user__button_menu"to="/search">Rechercher une fiche</Link>}
-                <Link className="user__button_menu" to="/profil">Mon compte</Link>
-                <Link className="user__button_menu" to="/search">Rechercher</Link>
-        </section>
-        </>
-    )
+            </section>
+            <section className="user__menu">
+                    <Link to="/createForm" className="user__button_menu" >Créer une fiche</Link>
+                    {hasDefuncts ? 
+                    <><div className ="user__button_menu user__myDefuncts" onClick={toggleList}>
+                    <span>Modifier une fiche</span>
+                    {isOpen && <div className='user__list_defuncts'>
+                        { Object.entries(defunctsList).map(([key, item])=>(
+                            <p key={key} onClick={()=>{selectedDefunct(item.id)}}>{item.lastname} {item.firstname}</p>
+                            ))}
+                            </div>}
+                            </div></>
+                        : <Link className="user__button_menu"to="/search">Rechercher une fiche</Link>}
+                    <Link className="user__button_menu" to="/profil">Mon compte</Link>
+                    <Link className="user__button_menu" to="/search">Rechercher</Link>
+            </section>
+            </>
+        )
+    }
 }
 export default UserHeader

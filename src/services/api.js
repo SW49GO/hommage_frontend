@@ -171,8 +171,7 @@ export async function setRegister(id, token, data, ctrl){
           body:JSON.stringify({id:id, idDef:idDef}),
         })
         if (response.ok) {
-          const data = await response.json()
-          return data
+          return 'succes de la suppression'
       } else {
           return Promise.reject(new Error('Request failed'));
       }

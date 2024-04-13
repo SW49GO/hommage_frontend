@@ -8,6 +8,7 @@ import { setFormatDate } from "../services/formatData"
 import { useUpperCaseFistLetter } from "../hooks/upperCaseFirstLetter"
 
 const Createform = ()=>{
+
     const upperCaseFirstLetter = useUpperCaseFistLetter
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -23,11 +24,10 @@ const Createform = ()=>{
             const idDef = result.result
             dispatch(setDefunctsList({firstname:data.firstname,lastname: data.lastname,idDef: idDef}))
             data.defunct_id = idDef
-            const adminResult = await setRegister(id, token, data,'setUserAdmin')
-            console.log('adminresult:', adminResult)
+            setRegister(id, token, data,'setUserAdmin')
             navigate('/homeUser')
         }
-       sendDefunct()
+        sendDefunct()
     }
 
     return(
