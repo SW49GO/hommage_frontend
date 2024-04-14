@@ -39,7 +39,7 @@ const ModifyDef=()=>{
      */
     const handleFileDef = (e) => {
         async function saveFile (){
-            const pathName = await setFiles(id, idDef ,'defProfil', token, e.target.files[0])
+            const pathName = await setFiles(id, idDef ,'def', token, e.target.files[0])
             if(pathName){
                const modifPhotoStore = {...infosDefunct, photo: pathName}
                console.log('modifPhotoStore:', modifPhotoStore)

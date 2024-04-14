@@ -3,7 +3,7 @@ import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useForm } from "react-hook-form"
 import { verifyAccount } from "../services/api"
-import { setAuth, setId, setToken, setUserInfos } from "../features/store"
+import { setAdminInfos, setAuth, setId, setToken, setUserInfos } from "../features/store"
 import { getInfos } from "../services/api"
 import { selectToken, selectUserId } from "../features/selector"
 import { useQuery, useQueryClient } from 'react-query'
@@ -19,12 +19,13 @@ const Connexion = ()=>{
     const [connect, setConnect] = useState(false)
     console.log('connect:', connect)
 
-    const { isError} = useQuery('infoUser', () => getInfos(id, token, 'getUserData'),
+    const { isError} = useQuery('infoUser', () => getInfos(id, token,0, 'getUserData'),
                 { enable : connect,
                     retry:1,
                     onSuccess: (data) => {if (data!=='Missing data') {
-                        console.log('data:', data)
                         dispatch(setUserInfos(data.userData[0]))
+                        const adminInfos = data.userData.filter((item, index) => index !== 0)
+                        dispatch(setAdminInfos(adminInfos))
                     }}
                 })
     const {handleSubmit,register} = useForm()

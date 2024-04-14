@@ -1,10 +1,16 @@
-import { selectDefunctsList, selectIdDef, selectToken, selectUserId } from "../features/selector"
+import { selectAdminInfos, selectDefunct, selectDefunctsList, selectIdDef, selectToken, selectUserId, selectUserInfos } from "../features/selector"
 import { getInfos } from "../services/api"
-import { useQuery } from 'react-query'
+// import { useQuery } from 'react-query'
 import {useSelector} from 'react-redux'
 import { Link } from "react-router-dom"
+import React,{ useState, useRef } from "react"
+import { FaArrowRight } from "react-icons/fa"
+import { setFiles, updatePhoto } from "../services/api"
+
 
 const Environment=()=>{
+    const fileInputRef = useRef(null)
+    const [cacheBuster, setCacheBuster] = useState(0)
     const id = useSelector(selectUserId)
     const token = useSelector(selectToken)
     // const { data } = useQuery('infoDef', () => getInfos(id, token, 'getUserDefunctList'),
@@ -14,10 +20,42 @@ const Environment=()=>{
     //     // dispatch(setUserInfos(data.userData[0]))
     //   }}
     // })
+    const defunctSelected = useSelector(selectDefunct)
+    console.log('defunctSelected:', defunctSelected)
+    const infosUser = useSelector(selectUserInfos)
     const defunctsList = useSelector(selectDefunctsList)
     const idDef = useSelector(selectIdDef) 
     const defunct = defunctsList.filter((item)=>(item.id===idDef))
-    console.log('defunct:', idDef)
+    console.log('defunct:', defunct)    
+    const adminInfos = useSelector(selectAdminInfos)
+    let isAdmin
+    if(defunct.length>0){
+       isAdmin = adminInfos.some((item)=>(item.defunct_id===idDef))
+    }else{
+       async function otherAdmin(){
+            const result = await getInfos(id ,token, idDef ,'getUserAdminInfo')
+            console.log('result:', result)
+        }
+       otherAdmin() 
+    }
+
+    const [isOpen, setIsOpen] = useState(false)
+    const toggleFolder = () => setIsOpen(!isOpen)
+    const handleImageClick = () => {
+        fileInputRef.current.click()
+        }
+    const handleFileChange = (e) => {
+        async function saveFile (){
+            const pathName = await setFiles(id, idDef ,'def', token, e.target.files[0])
+            console.log('pathName:', pathName)
+            if(pathName){
+                // To indicate the image has been change
+                setCacheBuster(prev => prev + 1)
+                updatePhoto(id, 0, pathName, token, '')
+            }
+        }
+        saveFile()
+    }
 
     return(
         <>
@@ -30,29 +68,30 @@ const Environment=()=>{
                     </Link> */}
                 </div>
             {/* <?php endif ?> */}
-                <h2 className="env__title" >{defunct[0].firstname} {defunct[0].lastname}</h2>
+                <h2 className="env__title" >{defunctSelected.firstname} {defunctSelected.lastname}</h2>
                 <div className="env__date">
-                    {defunct[0].birthdate? <h4>{defunct[0].birthdate}</h4>: <h4>Naissance non définie</h4>}
+                    {defunctSelected.birthdate? <h4>{defunctSelected.birthdate}</h4>: <h4>Naissance non définie</h4>}
                     <img className="img dim40" src="./assets/site/cross.png" alt="croix"/>
-                    {<h4>{defunct[0].death_date}</h4>}
+                    {<h4>{defunctSelected.death_date}</h4>}
                 </div>
                 <hr/>
             {/* <?php  */}
     {/* // Dossier de téléchargement des photos du defunt sélectionné */}
-            {/* if (isset($_SESSION['user']['id'])) :?> */}
-            <Link className="env__folder_link" href="" title="Dossier de stockage des photos">
+            {!isOpen && 
+            <div className="env__folder_link" onClick={toggleFolder}>
                 <div className="env__folder">
                     <img className="img" src="./assets/site/folder.png" alt="Dossier de stockage photos"/>
                 </div>
                 <div>
-                    <p>Cliquez sur le Dossier pour telecharger les photos de {defunct[0].firstname} {defunct[0].lastname}</p>
+                    <p>Cliquez sur le Dossier pour telecharger les photos de {defunctSelected.firstname} {defunctSelected.lastname}</p>
                 </div>
-            </Link>
+            </div>}
             {/* <?php  */}
     {/* // Identifiant du créateur de la fiche + ajout icone ami si pas dans la liste de l'utilisateur */}
             <div className="env__add_friend">
                 <p><u>Gestionnaire de la fiche :</u></p>
                 <div className="admin_user">
+                    {isAdmin && <p>{infosUser[0].firstname} {infosUser[0].lastname}</p>}
                     {/* <?=$user_admin['admin']['lastname'].' '.$user_admin['admin']['firstname'].' <em>('.$user_admin['admin']['affinity'].')</em>'?> */}
                 {/* <?php if ($friendOk == false) :?> */}
                     <a className="friend" href="?page=environment&id_def=<?=$id_def?>&friend_add=<?=$defunct_infos['user_id']?>" title="Ajouter aux contacts">
@@ -71,18 +110,20 @@ const Environment=()=>{
         </div>
     </section>
     <section>
-        <div  className="env__photos_list hidden">
+    {isOpen &&
+        <div  className="env__photos_list">
         {/* <?php if ($defunct_photos) :?> */}
             {/* <?php foreach($defunct_photos as $r): ?> */}
             <div className="env__min_photo">
                 <img className="img" src="public/pictures/photos/<?=$r['user_id']?>/<?=$r['name'] ?>" alt="<?=$r['name'] ?>"/>
-                <a title="Telecharger" download="image_<?=$r['id']?>.jpg" href="public/pictures/photos/<?=$r['user_id'].'/'.$r['name'] ?>"><img className="img dim20" src="public/pictures/site/download.png" alt="icone téléchargement"/></a>
+                <button title="Telecharger" download="image_<?=$r['id']?>.jpg" href="public/pictures/photos/<?=$r['user_id'].'/'.$r['name'] ?>"><img className="img dim20" src="public/pictures/site/download.png" alt="icone téléchargement"/></button>
             </div>
             {/* <?php endforeach ?>
         <?php else :?> */}
                 {/* <p><i className="fas fa-ban"></i>&nbsp;Aucune photos de <?=$defunct_infos['firstname'].' '.$defunct_infos['lastname'].' ' ?><i className="fas fa-ban"></i></p>
         <?php endif ?> */}
-        </div>
+        </div> 
+    }
         <hr/>
     </section>
     <section>
@@ -102,15 +143,14 @@ const Environment=()=>{
         <div>
             {/* <?=$messFile?> */}
         </div>
-        {/* <form method="POST" action="?page=environment&id=<?=$id_def?>" enctype="multipart/form-data" id="form_env">
+        <form enctype="multipart/form-data" id="form_env">
             <label for="file_env"></label>
-            <input type="file" name="file_env" id="file_env" accept=".jpg, .jpeg, .png"/>
+            <input type="file" name="file_env" id="file_env" ref={fileInputRef} onChange={handleFileChange}/>
             <div className="env__add_photo">
-                <label>Ajouter une photo (2Mo max) &emsp;</label>
-                <img className="img dim60" src="public/pictures/site/photo-icon.png" alt="appareil photo"/>
+                <label>Ajouter une photo (2Mo max) &emsp;<FaArrowRight/></label>
+                <img className="img dim60" src="./assets/site/photo-icon.png" alt="appareil" onClick={handleImageClick}/>
             </div>
-            {/* <input type="hidden" name="token" value="<?=$token?>"> */}
-        {/* </form> */} 
+        </form> 
         {/* <?php endif ?> */}
         <div className="env__container">
         {/* <?php  */}
@@ -173,7 +213,7 @@ const Environment=()=>{
     {/* // Affichage d'un bandeau "New" pour les nouveaux commentaires */}
                     {/* if ((isset($_SESSION['user']['last_log']) && isset($comment['date_crea']) && $_SESSION['user']['last_log'] < $comment['date_crea']) && (isset($_SESSION['user']['id']) && isset($comment['user_id']) && $_SESSION['user']['id'] !== $comment['user_id'])): ?> */}
                             <div className="new_comment">
-                                <img className="img" src="public/pictures/site/new.png" alt="Bandeau nouveau commentaire"/>
+                                <img className="img" src="./assets/site/new.png" alt="Bandeau nouveau commentaire"/>
                             </div>
                 {/* <?php endif ?> */}
                         </div>
@@ -194,14 +234,12 @@ const Environment=()=>{
                 </div>
         {/* <?php endforeach ?> */}
             </div>
-        {/* <?php if (!isset($_SESSION['user']['id'])) :?> */}
+        {defunctsList.length===0 &&  
             <div className="env__no_user">
                 <h2 className="env_title">Pour visualiser cette fiche, vous devez être inscrit ou connecté.</h2>
-                <a className="button" href="?page=registration">S'inscrire</a>
-                <a className="button" href="?page=connexion">Connexion</a>
-            </div>
-        {/* <?php endif ?> */}
-        
+                <Link className="button" to={'/register'}>S'inscrire</Link>
+                <Link className="button" to={'/connexion'}>Connexion</Link>
+            </div>}
     </section>
     </>
     )

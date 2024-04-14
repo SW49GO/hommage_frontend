@@ -1,29 +1,49 @@
+import { useSelector, useDispatch } from "react-redux"
+import { getInfos } from "../services/api"
+import { useQuery } from "react-query"
+import { selectToken, selectUserId} from "../features/selector"
+import { setDefIdSelected, setSelectedDef } from "../features/store"
+import { useNavigate } from "react-router-dom"
+
 const Search = () =>{
-    return (
-        <>
-            <h1 class="search__title">Personne recherchée sur le site.</h1>
-            <div class="search">
-                <form method="POST" action="?page=search">
-                    <select id="select_lastname" name="select_def">
-                        <option value="">--Fiches des défunts sur le site--</option>
-                        {/* <?=$select?> */}
-                    </select>
-                    <input class="button" type="submit" value="Valider"/>
-                    <input type="hidden" name="token" value="<?=$token?>"/>
-                </form>
-            </div>
-            <div class="search__defunct">
-                {/* <?=$defunct?> */}
-            </div>
-            <h3 class="search__title">Personne recherchée dans la liste des défunts de l'INSEE.</h3>
-            <div class="search__insee">
-                <label for="lastname_insee"></label>
-                <input type="text" name="lastname_insee" id="lastname_insee" placeholder="Nom de famille"/>
-                <select class="search__result_insee"></select>
-                <p>Les données de l'INSEE sont actualisées mensuellement.</p>
-                <p>Elles sont ici à titre indicatif.</p>
-            </div>
-        </>
-    )
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const id = useSelector(selectUserId)
+    const token = useSelector(selectToken)
+    const {isError, data} = useQuery('defunctList',() => getInfos(id, token,0, 'getAllDefuncts'))
+    /**
+     * Function to select a defunct
+     * @param {number} idDef 
+     */
+    const selectedDefunct= (idDef)=>{
+        dispatch(setDefIdSelected(idDef))
+        const selectedDef = data.result.filter((item)=>(item.id===idDef))
+        dispatch(setSelectedDef(selectedDef))
+        navigate('/environment')
+    }
+
+if(!isError){
+        return (
+            <>
+                <h1 className="search__title">Personne recherchée sur le site.</h1>
+                <div className="search">
+                    {data && data.result.length>0 ? data.result.map((item)=>(
+                        <p key={item.id} className="button" onClick={()=>{selectedDefunct(item.id)}}>{item.firstname} {item.lastname}</p>
+                    )): <p>Pas de défunts</p>}
+                </div>
+                <div className="search__defunct">
+                    {/* <?=$defunct?> */}
+                </div>
+                <h3 className="search__title">Personne recherchée dans la liste des défunts de l'INSEE.</h3>
+                <div className="search__insee">
+                    <label htmlFor="lastname_insee"></label>
+                    <input type="text" name="lastname_insee" id="lastname_insee" placeholder="Nom de famille"/>
+                    {/* <select className="search__result_insee"></select> */}
+                    <p>Les données de l'INSEE sont actualisées mensuellement.</p>
+                    <p>Elles sont ici à titre indicatif.</p>
+                </div>
+            </>
+        )
+    }
 }
 export default Search

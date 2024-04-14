@@ -73,7 +73,7 @@ const UserHeader = () =>{
         saveFile()
     }
     // Request for Defunct List
-    const { data:defunctArray } = useQuery('infoDef', () => getInfos(id, token, 'getUserDefunctList'),
+    const { data:defunctArray } = useQuery('infoDef', () => getInfos(id, token,0, 'getUserDefunctList'),
     {   retry:1,
         onSuccess: (data) => {if (data) {
             if(data.result.length>0){
@@ -85,7 +85,7 @@ const UserHeader = () =>{
  
     // console.log(defunctArray)
     // Active a new friend request since lastLog
-    const {data:friends} = useQuery('newFriend',()=> getInfos(id,token, 'getAskFriend'),
+    const {data:friends} = useQuery('newFriend',()=> getInfos(id,token,0, 'getAskFriend'),
     {   retry:1,
         onSuccess: (friends)=> { if (friends){
             // console.log('inside',friends.friends)
@@ -103,7 +103,7 @@ const UserHeader = () =>{
 // console.log('friends',friends)
 
     // Active a new Message request since lastLog
-    const {data : tchat} = useQuery('newMessage',()=> getInfos(id,token, 'getNewTchat'),
+    const {data : tchat} = useQuery('newMessage',()=> getInfos(id,token,0, 'getNewTchat'),
     {   retry:1,
         onSuccess: (message)=> { if (message){
             // console.log('inside',message.result.length)
@@ -156,9 +156,6 @@ const UserHeader = () =>{
                     <div className="user__fix">
                         <Link to="/" className="user__mini_icons" title="Déconnecter" onClick={()=>{localStorage.removeItem('persist:localStorageUser');localStorage.removeItem('persist:localStorageAuth');localStorage.removeItem('persist:localStorageUtil') ;dispatch(setAuth(false))}}>
                                 <img className="img dim40" src="./assets/site/power-icon.png" alt="icone deconnexion"/>
-                        </Link>
-                        <Link to="/environment" className="user__mini_icons" title="Environnement utilisateur">
-                                <img className="img dim40" src="./assets/site/environment-icon.png" alt="icone environnement utilisateur"/>
                         </Link>
                         <Link to="/homeUser" className="user__mini_icons" title="Accueil utilisateur">
                                 <img className="img dim40" src="./assets/site/home-icon.png" alt="icone home utilisateur"/>
