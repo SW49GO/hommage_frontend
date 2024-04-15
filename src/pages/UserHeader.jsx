@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { Link } from "react-router-dom"
 import { useState} from "react"
 import { setFiles, updatePhoto, getInfos} from "../services/api"
-import { updateUserInfos, setAuth, setDefunctsList, setDefIdSelected, setNumberFriends, setSelectedDef} from '../features/store'
+import { updateUserInfos, setAuth, setDefunctsList, setDefIdSelected, setNumberFriends, setSelectedDef, setListFriends} from '../features/store'
 import { useQuery, useQueryClient } from 'react-query'
 import {useNavigate} from 'react-router-dom'
 
@@ -81,6 +81,13 @@ const UserHeader = () =>{
             dispatch(setDefunctsList(data.result))
         }},
         onError:(err)=>{console.log(err)}
+    })
+    // List of Friends
+    const { data:listFriends } = useQuery('listFriends', () => getInfos(id, token, 0, 'getFriendsList'),
+    { retry:1,
+      onSuccess: (data) => {if (data) {
+        dispatch(setListFriends(data.result))
+      }}
     })
  
     // console.log(defunctArray)

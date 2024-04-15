@@ -44,7 +44,8 @@ const userSlice = createSlice({
     defunctsList: [],
     defunctSelected:[],
     numberFriends : 0,
-    numberMessages: 0
+    numberMessages: 0,
+    listFriends :[]
   },
   reducers: {
     setUserInfos: (state, action)=>{
@@ -79,6 +80,9 @@ const userSlice = createSlice({
     },
     setAdminInfos : (state,action)=>{
       state.adminInfos = action.payload
+    },
+    setListFriends : (state, action)=>{
+      state.listFriends=action.payload
     }
   }
 })
@@ -87,17 +91,21 @@ const utilSlice = createSlice({
   name: 'utilSlice',
   initialState: {
     idDefIdSelected: null,
+    infosAdmin:[]
   },
   reducers: {
     setDefIdSelected : (state,action)=>{
       state.idDefIdSelected = action.payload
+    },
+    setInfosAdmin : (state, action)=>{
+      state.infosAdmin = action.payload
     }
   }
 })
 
 export const {setAuth, setToken,setId, setPwd} = authSlice.actions
-export const {setUserInfos, setNumberFriends, setNumberMessages, setDefunctsList,updateUserInfos,setSelectedDef,setAdminInfos} = userSlice.actions
-export const {setDefIdSelected} = utilSlice.actions
+export const {setUserInfos, setNumberFriends, setNumberMessages, setDefunctsList,updateUserInfos,setSelectedDef,setAdminInfos,setListFriends} = userSlice.actions
+export const {setDefIdSelected,setInfosAdmin} = utilSlice.actions
 
 const authPersistSlice = persistReducer(sessionStorageAuth, authSlice.reducer)
 const userInfosPersistSlice = persistReducer(localStorageUser, userSlice.reducer)

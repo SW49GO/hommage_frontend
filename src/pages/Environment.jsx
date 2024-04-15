@@ -1,43 +1,53 @@
-import { selectAdminInfos, selectDefunct, selectDefunctsList, selectIdDef, selectToken, selectUserId, selectUserInfos } from "../features/selector"
+/* eslint-disable react-hooks/exhaustive-deps */
+import { selectAdminInfos, selectDefunct, selectDefunctsList, selectIdDef, selectToken, selectUserId, selectUserInfos,selectNewAdmin, selectListFriends } from "../features/selector"
 import { getInfos } from "../services/api"
-// import { useQuery } from 'react-query'
-import {useSelector} from 'react-redux'
+import { useQuery, useQueryClient } from 'react-query'
+import {useDispatch, useSelector} from 'react-redux'
 import { Link } from "react-router-dom"
-import React,{ useState, useRef } from "react"
+import React,{ useState, useRef,useEffect } from "react"
 import { FaArrowRight } from "react-icons/fa"
-import { setFiles, updatePhoto } from "../services/api"
+import { setFiles,setRegister } from "../services/api"
+import { setInfosAdmin } from "../features/store"
 
 
 const Environment=()=>{
+    const dispatch=useDispatch()
+    const queryClient= useQueryClient()
     const fileInputRef = useRef(null)
     const [cacheBuster, setCacheBuster] = useState(0)
     const id = useSelector(selectUserId)
     const token = useSelector(selectToken)
-    // const { data } = useQuery('infoDef', () => getInfos(id, token, 'getUserDefunctList'),
-    // { retry:1,
-    //   onSuccess: (data) => {if (data) {
-    //     console.log('data:', data.result)
-    //     // dispatch(setUserInfos(data.userData[0]))
-    //   }}
-    // })
     const defunctSelected = useSelector(selectDefunct)
-    console.log('defunctSelected:', defunctSelected)
     const infosUser = useSelector(selectUserInfos)
     const defunctsList = useSelector(selectDefunctsList)
     const idDef = useSelector(selectIdDef) 
     const defunct = defunctsList.filter((item)=>(item.id===idDef))
-    console.log('defunct:', defunct)    
     const adminInfos = useSelector(selectAdminInfos)
-    let isAdmin
-    if(defunct.length>0){
-       isAdmin = adminInfos.some((item)=>(item.defunct_id===idDef))
-    }else{
-       async function otherAdmin(){
-            const result = await getInfos(id ,token, idDef ,'getUserAdminInfo')
-            console.log('result:', result)
+    const otherAdmin = useSelector(selectNewAdmin)
+    const isAdmin = defunct.length>0 && adminInfos.some((item)=>(item.defunct_id===idDef))
+    const listFriends = useSelector(selectListFriends)
+    console.log('listFriends:', listFriends)
+    const [isFriend, setIsFriend] = useState(false)
+
+    // Retrieve all photos from a defunct
+    const {data:listPhotosDef}= useQuery('photosDef', () =>getInfos(id, token, idDef, 'photoListDefunct'))
+
+    useEffect(() => {
+        if (!isAdmin) {
+            async function otherAdminInfos(){
+                const result = await getInfos(id ,token, idDef ,'getUserAdminInfo')
+                if(result){
+                    const newAdminInfos={firstname:result.admin.firstname, lastname:result.admin.lastname}
+                    dispatch(setInfosAdmin(newAdminInfos))
+                    // Verify if otherAdmin is in the list of Friends for icone
+                    if (result.admin.id===listFriends.friend_id){
+                        setIsFriend(true)
+                    }
+                }
+            }
+            otherAdminInfos()
         }
-       otherAdmin() 
-    }
+    }, [isAdmin])
 
     const [isOpen, setIsOpen] = useState(false)
     const toggleFolder = () => setIsOpen(!isOpen)
@@ -47,14 +57,34 @@ const Environment=()=>{
     const handleFileChange = (e) => {
         async function saveFile (){
             const pathName = await setFiles(id, idDef ,'def', token, e.target.files[0])
-            console.log('pathName:', pathName)
             if(pathName){
                 // To indicate the image has been change
                 setCacheBuster(prev => prev + 1)
-                updatePhoto(id, 0, pathName, token, '')
+                const data={name:pathName, defunct_id:idDef, user_id:id}
+                const idRegister = await setRegister(id, token, data, 'setPhotoDef')
+                console.log('idRegister:', idRegister.result)
+                queryClient.invalidateQueries('photosDef')
             }
         }
         saveFile()
+    }
+    const handleDownload = async (fileUrl) => {
+        try {
+            const response = await fetch(fileUrl)
+            const blob = await response.blob()
+            // Crée un objet URL à partir du blob
+            const url = URL.createObjectURL(blob)
+            // Crée un lien pour déclencher le téléchargement
+            const link = document.createElement('a')
+            link.href = url
+            link.download = 'Hommage-Image.jpeg'
+            // Déclencher le téléchargement
+            link.click()
+            // Libère l'URL générée
+            URL.revokeObjectURL(url)
+        } catch (error) {
+            console.error('Une erreur est survenue lors du téléchargement du fichier : ', error)
+        }
     }
 
     return(
@@ -91,37 +121,29 @@ const Environment=()=>{
             <div className="env__add_friend">
                 <p><u>Gestionnaire de la fiche :</u></p>
                 <div className="admin_user">
-                    {isAdmin && <p>{infosUser[0].firstname} {infosUser[0].lastname}</p>}
-                    {/* <?=$user_admin['admin']['lastname'].' '.$user_admin['admin']['firstname'].' <em>('.$user_admin['admin']['affinity'].')</em>'?> */}
-                {/* <?php if ($friendOk == false) :?> */}
-                    <a className="friend" href="?page=environment&id_def=<?=$id_def?>&friend_add=<?=$defunct_infos['user_id']?>" title="Ajouter aux contacts">
-                        <img className="img dim20 friend_add" src="./assets/site/friend.png" alt="icone ajouter"/>
-                    </a>
+                    {isAdmin ? <p>{infosUser[0].firstname} {infosUser[0].lastname}</p>:<div><p>{otherAdmin.firstname} {otherAdmin.lastname}</p>
+                    {!isFriend && <img className="img dim20 friend_add" src="./assets/site/friend.png" alt="icone ajouter"/>}</div>}
                 </div>
-                {/* <?php endif ?> */}
             </div>
             <div className="friend_mess">
                 {/* <?=$message?> */}
             </div>
-            {/* <?php endif ?>
-        <?php  */}
-    {/* // Dossier caché contenant toutes les photos du défunt */}
-            {/* endif ?> */}
         </div>
     </section>
-    <section>
+    <section>    
+     {/* // Dossier caché contenant toutes les photos du défunt */}
     {isOpen &&
         <div  className="env__photos_list">
-        {/* <?php if ($defunct_photos) :?> */}
-            {/* <?php foreach($defunct_photos as $r): ?> */}
-            <div className="env__min_photo">
-                <img className="img" src="public/pictures/photos/<?=$r['user_id']?>/<?=$r['name'] ?>" alt="<?=$r['name'] ?>"/>
-                <button title="Telecharger" download="image_<?=$r['id']?>.jpg" href="public/pictures/photos/<?=$r['user_id'].'/'.$r['name'] ?>"><img className="img dim20" src="public/pictures/site/download.png" alt="icone téléchargement"/></button>
-            </div>
-            {/* <?php endforeach ?>
-        <?php else :?> */}
-                {/* <p><i className="fas fa-ban"></i>&nbsp;Aucune photos de <?=$defunct_infos['firstname'].' '.$defunct_infos['lastname'].' ' ?><i className="fas fa-ban"></i></p>
-        <?php endif ?> */}
+            <img className="dim20 env__photos-close" src="./assets/site/delete-icon.png" alt="Fermer" onClick={()=>setIsOpen(false)}/>
+            <>
+                {listPhotosDef.result.length>0 ? 
+                listPhotosDef.result.map((item)=>(
+                    <div key={item.id} className="env__min_photo">
+                    <img  className="img" src={`http://localhost:3000/${item.name}`} alt="defunct" />
+                    <img  className="img dim20" src="./assets/site/download.png" alt="icone téléchargement" onClick={()=>handleDownload(`http://localhost:3000/${item.name}`)}/>
+                </div>))
+                :<p>Aucune photos à afficher</p>}
+            </>
         </div> 
     }
         <hr/>
@@ -144,7 +166,7 @@ const Environment=()=>{
             {/* <?=$messFile?> */}
         </div>
         <form enctype="multipart/form-data" id="form_env">
-            <label for="file_env"></label>
+            <label htmlFor="file_env"></label>
             <input type="file" name="file_env" id="file_env" ref={fileInputRef} onChange={handleFileChange}/>
             <div className="env__add_photo">
                 <label>Ajouter une photo (2Mo max) &emsp;<FaArrowRight/></label>
@@ -195,9 +217,9 @@ const Environment=()=>{
                 {/* <?php endif ?> */}
                         <div className="env__profil">
                 {/* <?php if (file_exists('public/pictures/users/'.$comment['user_id'].'/'.$comment['profil_user'])) : ?> */}
-                            <img className="img" src="public/pictures/users/<?=$comment['user_id'].'/'.$comment['profil_user']?>" alt="photo de profil"/>
+                            <img className="img" src="./assets/users/<?=$comment['user_id'].'/'.$comment['profil_user']?>" alt="profil"/>
                 {/* <?php else : ?> */}
-                            <img className="img" src="public/pictures/site/noone.jpg" alt="photo de profil"/>
+                            <img className="img" src=".:assets/site/noone.jpg" alt="profil"/>
                 {/* <?php endif ?> */}
                         </div>
                         {/* <?=$comment['comment']?>

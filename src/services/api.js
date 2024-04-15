@@ -124,10 +124,12 @@ console.log('token:', token)
 }
 
 export async function setRegister(id, token, data, ctrl){
-    console.log('data:', data)
+    console.log('dataSETREGISTER:', data)
+    console.log('id:', id)
     const user_id = id
-    data.user_id=user_id
-  
+    if(!data.user_id){data.user_id = user_id}
+      console.log('data:', data)
+
     try{
       const response = await fetch (`http://localhost:3000/api/user/register/${ctrl}`,{
         method: 'PUT',
