@@ -195,13 +195,13 @@ const Environment=()=>{
         <EnvDef id={id} token={token} idDef={idDef} isAdmin={isAdmin} auth={auth} infosUser={infosUser}/>
     {/* // Formulaire ajout de commentaire */}
                 {/* if (isset($_SESSION['user']['id'])) : ?> */}
-                    <form className="env__comment_form">
+                    {/* <form className="env__comment_form">
                         <input type="text" name="comment" className="env__comment_txt"/>
                         <label htmlFor="comment">Commenter</label>
                         <input type="hidden" name="id_def" className="id_def" value="<?=$id_def?>"/>
                         <input type="hidden" name="photo_id" className="photo_id" value="<?=$r['id']?>"/>
                         <input type="hidden" name="user_id" className="user_id" value="<?=$_SESSION['user']['id']?>"/>
-                    </form>
+                    </form> */}
             {/* <?php endif ?> */}
                 {/* </div> */}
         {/* <?php endforeach ?> */}
