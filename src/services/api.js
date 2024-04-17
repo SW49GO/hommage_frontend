@@ -41,7 +41,8 @@ export async function verifyAccount(data){
   }
 }
 
-export async function getInfos(id, token, idDef, ctrl) {
+export async function getInfos(id, token, idDef, ctrl, other) {
+    console.log('other:', other)
     console.log('idDef:', idDef)
     console.log('token:', token)
     console.log('ctrl:', ctrl)
@@ -55,7 +56,7 @@ export async function getInfos(id, token, idDef, ctrl) {
       const response = await fetch(`http://localhost:3000/api/user/getInfos/${ctrl}`, {
           method: 'POST',
           headers: {'Content-Type': 'application/json','Authorization': `Bearer ${token}`},
-          body: JSON.stringify({id:id, defunct_id:idDef}),
+          body: JSON.stringify({id:id, defunct_id:idDef, other:other}),
       })
         if(response.ok){
           const data = await response.json()

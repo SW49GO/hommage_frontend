@@ -897,6 +897,9 @@ input[name="photodef"]{
   border-radius: 1.2rem;
   background-color: var(--color-grey-light);
 }
+.env__imageDef{
+ text-align: center;
+}
 .env__title {
   margin: 1.25rem;
 }
@@ -913,6 +916,9 @@ input[name="photodef"]{
   width: 6.375rem;
   height: 6.375rem;
   margin: 0.63rem auto;
+}
+.env__photo{
+  position:relative;
 }
 .env__photos_list {
   position:relative;
@@ -939,6 +945,7 @@ input[name="photodef"]{
 .env__photos-close{
   position:absolute;
   right:0.5rem;
+  filter: blur(0);
 }
 .env__listing {
   display: flex;
@@ -1008,10 +1015,10 @@ input[name="photodef"]{
   height: 3.125rem;
 }
 .env__blur_comment {
-  filter: blur(0.313rem);
+  filter: blur(0.4rem);
 }
 .env__blur_photo {
-  filter: blur(0.513rem);
+  filter: blur(0.9rem);
 }
 .env__no_user{
   text-align:center;
