@@ -9,7 +9,7 @@ export const selectUserInfos = (state) =>state.userSlice.userInfos
 export const selectNumberFriends = (state)=>state.userSlice.numberFriends
 export const selectNumberMessages = (state)=>state.userSlice.numberMessages
 export const selectDefunctsList = (state)=>state.userSlice.defunctsList
-export const selectDefunct = (state)=>state.userSlice.defunctSelected[0]
+export const selectDefunct = (state)=>state.userSlice.defunctSelected
 export const selectAdminInfos = (state) => state.userSlice.adminInfos
 export const selectListFriends = (state) => state.userSlice.listFriends[0]
 

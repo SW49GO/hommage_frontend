@@ -1,14 +1,17 @@
 import { Link } from "react-router-dom"
 import {FaLeaf,FaAddressCard,FaSearch,FaShoppingBasket,FaEnvelope, FaHome,FaPowerOff,FaUserCircle} from 'react-icons/fa'
 import { useSelector,useDispatch } from "react-redux"
-import { selectAuth } from "../features/selector"
+import { selectAuth, selectToken, selectUserId } from "../features/selector"
 import '../index.css'
 import { useState } from "react"
 import { setAuth } from "../features/store"
+import { updater } from "../services/api"
 
 const NavMenu=()=>{
     const dispatch = useDispatch()
     const auth = useSelector(selectAuth)
+    const id = useSelector(selectUserId)
+    const token = useSelector(selectToken)
     const [classN, setClassN]=useState('')
     const [isOpen, setIsOpen]=useState(false)
 
@@ -19,7 +22,7 @@ const NavMenu=()=>{
             <p id="nav__bar-close" className={`nav__bar-a close ${classN}`} onClick={()=>{setClassN('');setIsOpen(false)}}>x</p>
             <ul>
                 <li><Link className="nav__bar-a" to="/" onClick={()=>{setClassN('');setIsOpen(false)}}><FaHome/>&nbsp; Accueil</Link></li>
-                {auth ? <li><Link className="nav__bar-a" to={'/'} onClick={()=>{setClassN('');setIsOpen(false); dispatch(setAuth(false))}}><FaPowerOff/>&nbsp;Déconnexion</Link>
+                {auth ? <li><Link className="nav__bar-a" to={'/'} onClick={()=>{setClassN('');setIsOpen(false); dispatch(setAuth(false));updater(id,token,0,'updateOnline')}}><FaPowerOff/>&nbsp;Déconnexion</Link>
                 </li>:<><li><Link className="nav__bar-a" to={'/connexion'} onClick={()=>{setClassN('');setIsOpen(false)}}><FaPowerOff/>&nbsp;Connexion</Link>
                 </li> 
                 <li><Link className="nav__bar-a" to={'/register'} onClick={()=>{setClassN('');setIsOpen(false)}}><FaUserCircle/>&nbsp;S'inscrire</Link>

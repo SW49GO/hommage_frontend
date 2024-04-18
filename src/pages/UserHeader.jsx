@@ -3,7 +3,7 @@ import { selectDefunctsList, selectNumberFriends, selectNumberMessages, selectUs
 import { useSelector, useDispatch } from "react-redux"
 import { Link } from "react-router-dom"
 import { useState} from "react"
-import { setFiles, updatePhoto, getInfos} from "../services/api"
+import { setFiles, updatePhoto, getInfos, updater} from "../services/api"
 import { updateUserInfos, setAuth, setDefunctsList, setDefIdSelected, setNumberFriends, setSelectedDef, setListFriends} from '../features/store'
 import { useQuery, useQueryClient } from 'react-query'
 import {useNavigate} from 'react-router-dom'
@@ -133,7 +133,7 @@ const UserHeader = () =>{
     const selectedDefunct= (idDef)=>{
         dispatch(setDefIdSelected(idDef))
         const selectedDef = defunctsList.filter((item)=>(item.id===idDef))
-        dispatch(setSelectedDef(selectedDef))
+        dispatch(setSelectedDef(selectedDef[0]))
         navigate('/modifyDef')
     }
     if(infosUser[0]){
@@ -161,7 +161,7 @@ const UserHeader = () =>{
                         </Link>
                     </div>
                     <div className="user__fix">
-                        <Link to="/" className="user__mini_icons" title="Déconnecter" onClick={()=>{localStorage.removeItem('persist:localStorageUser');localStorage.removeItem('persist:localStorageAuth');localStorage.removeItem('persist:localStorageUtil') ;dispatch(setAuth(false))}}>
+                        <Link to="/" className="user__mini_icons" title="Déconnecter" onClick={()=>{dispatch(setAuth(false));localStorage.removeItem('persist:localStorageUser');localStorage.removeItem('persist:localStorageUtil');updater(id,token,0,'updateOnline')}}>
                                 <img className="img dim40" src="./assets/site/power-icon.png" alt="icone deconnexion"/>
                         </Link>
                         <Link to="/homeUser" className="user__mini_icons" title="Accueil utilisateur">

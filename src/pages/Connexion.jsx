@@ -7,6 +7,7 @@ import { setAdminInfos, setAuth, setId, setToken, setUserInfos } from "../featur
 import { getInfos } from "../services/api"
 import { selectToken, selectUserId } from "../features/selector"
 import { useQuery, useQueryClient } from 'react-query'
+import { updater } from "../services/api"
 
 const Connexion = ()=>{
     const dispatch = useDispatch()
@@ -19,13 +20,17 @@ const Connexion = ()=>{
     const [connect, setConnect] = useState(false)
     console.log('connect:', connect)
 
-    const { isError} = useQuery('infoUser', () => getInfos(id, token,0, 'getUserData'),
+    const { isError} = useQuery('infoUser',  () =>  getInfos(id, token,0, 'getUserData'),
                 { enable : connect,
                     retry:1,
-                    onSuccess: (data) => {if (data!=='Missing data') {
+                    onSuccess:  (data) => {if (data!=='Missing data') {
                         dispatch(setUserInfos(data.userData[0]))
                         const adminInfos = data.userData.filter((item, index) => index !== 0)
                         dispatch(setAdminInfos(adminInfos))
+                        // Update the connexion informations
+                        updater(id,token,null, 'updateLastLogin')
+                        updater(id, token,null,'updateNewLogin')
+                        updater(id,token,1,'updateOnline')
                     }}
                 })
     const {handleSubmit,register} = useForm()

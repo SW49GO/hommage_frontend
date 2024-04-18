@@ -18,7 +18,7 @@ const Search = () =>{
     const selectedDefunct= (idDef)=>{
         dispatch(setDefIdSelected(idDef))
         const selectedDef = data.result.filter((item)=>(item.id===idDef))
-        dispatch(setSelectedDef(selectedDef))
+        dispatch(setSelectedDef(selectedDef[0]))
         navigate('/environment')
     }
 

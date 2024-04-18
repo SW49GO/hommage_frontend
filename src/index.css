@@ -986,6 +986,10 @@ input[name="photodef"]{
 .env__comment_post {
   position: relative;
 }
+.env__comment_post-delete{
+  position: absolute;
+  right:0.5rem;
+}
 .container_com_user {
   position: relative;
   display:flex;

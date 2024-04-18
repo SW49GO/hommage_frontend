@@ -19,7 +19,7 @@ export async function signIn(data){
 }
 
 export async function verifyAccount(data){
-  console.log('data:', data)
+  // console.log('data:', data)
   try{
     const response = await fetch(`http://localhost:3000/api/user/connect/verifyAccount`, {
         method: 'POST',
@@ -42,11 +42,11 @@ export async function verifyAccount(data){
 }
 
 export async function getInfos(id, token, idDef, ctrl, other) {
-    console.log('other:', other)
-    console.log('idDef:', idDef)
-    console.log('token:', token)
-    console.log('ctrl:', ctrl)
-     console.log('id:', id)
+    // console.log('other:', other)
+    // console.log('idDef:', idDef)
+    // console.log('token:', token)
+    // console.log('ctrl:', ctrl)
+    //  console.log('id:', id)
 
     if (!id) {
       return 'Missing data'
@@ -60,7 +60,7 @@ export async function getInfos(id, token, idDef, ctrl, other) {
       })
         if(response.ok){
           const data = await response.json()
-          console.log('dataREQ:', data)
+          // console.log('dataREQ:', data)
           return data
         }else if(response.status===400){
           throw new Error('400')
@@ -71,9 +71,9 @@ export async function getInfos(id, token, idDef, ctrl, other) {
 }
 
 export async function setFiles(id, defId, dest, token, file){
-console.log('fileFETCH:', file)
-console.log('id:', id)
-console.log('token:', token)
+// console.log('fileFETCH:', file)
+// console.log('id:', id)
+// console.log('token:', token)
 
   const formData = new FormData()
     formData.append('id', id)
@@ -100,9 +100,9 @@ console.log('token:', token)
   }
 
   export async function updatePhoto(id, idDef, photo, token, ctrl) {
-    console.log('token:', token)
+    // console.log('token:', token)
     // console.log('ctrl:', ctrl)
-     console.log('id:', id)
+    //  console.log('id:', id)
 
     if (!id) {
       return 'Missing data'
@@ -125,11 +125,11 @@ console.log('token:', token)
 }
 
 export async function setRegister(id, token, data, ctrl){
-    console.log('dataSETREGISTER:', data)
-    console.log('id:', id)
+    // console.log('dataSETREGISTER:', data)
+    // console.log('id:', id)
     const user_id = id
     if(!data.user_id){data.user_id = user_id}
-      console.log('data:', data)
+      // console.log('data:', data)
 
     try{
       const response = await fetch (`http://localhost:3000/api/user/register/${ctrl}`,{
@@ -167,20 +167,20 @@ export async function setRegister(id, token, data, ctrl){
         }
     }
 
-    export async function deleter(id, idDef, token, ctrl){
-
+    export async function deleter(id, idDef, token, ctrl, data){
+      // console.log('DELETER')
       try{
         const response = await fetch (`http://localhost:3000/api/user/deleter/${ctrl}`,{
           method: 'POST',
           headers: {'Authorization': `Bearer ${token}`,'Content-Type': 'application/json'},
-          body:JSON.stringify({id:id, idDef:idDef}),
+          body:JSON.stringify({id:id, idDef:idDef, idComment:data.idComment}),
         })
-        if (response.ok) {
-          return 'succes de la suppression'
-      } else {
-          return Promise.reject(new Error('Request failed'));
+          if (response.ok) {
+            return 'succes de la suppression'
+          } else {
+              return Promise.reject(new Error('Request failed'))
+          }
+      }catch(error){
+        return Promise.reject(error)
       }
-        }catch(error){
-          return Promise.reject(error)
-        }
     }

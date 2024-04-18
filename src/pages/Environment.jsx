@@ -7,7 +7,7 @@ import { Link } from "react-router-dom"
 import React,{ useState, useRef,useEffect } from "react"
 import { FaArrowRight } from "react-icons/fa"
 import { setFiles,setRegister } from "../services/api"
-import { setInfosAdmin } from "../features/store"
+import { setInfosAdmin, setSelectedDef } from "../features/store"
 import EnvDef from "../components/EnvDef"
 
 
@@ -19,25 +19,35 @@ const Environment=()=>{
     const auth = useSelector(selectAuth)
     const id = useSelector(selectUserId)
     const token = useSelector(selectToken)
+    // Id of the defunct
+    const idDef = useSelector(selectIdDef) 
+    // List of all defuncts
+    // const defunctList= useSelector(selectDefunctsList)
+    // Retrieve store defunct informations selected
     const defunctSelected = useSelector(selectDefunct)
     console.log('defunctSelected:', defunctSelected)
     const infosUser = useSelector(selectUserInfos)
-    console.log('infosUser:', infosUser)
+    // console.log('infosUser:', infosUser)
     const defunctsList = useSelector(selectDefunctsList)
-    const idDef = useSelector(selectIdDef) 
     const defunct = defunctsList.filter((item)=>(item.id===idDef))
     const adminInfos = useSelector(selectAdminInfos)
+    console.log('adminInfos:', adminInfos)
     const otherAdmin = useSelector(selectNewAdmin)
     const isAdmin = defunct.length>0 && adminInfos.some((item)=>(item.defunct_id===idDef))
+    console.log('isAdmin:', isAdmin)
     const listFriends = useSelector(selectListFriends)
-    console.log('listFriends:', listFriends)
+    // console.log('listFriends:', listFriends)
     const [isFriend, setIsFriend] = useState(false)
 
     // Retrieve all photos from a defunct
-    const {data:listPhotosDef}= useQuery('photosDef', () =>getInfos(id, token, idDef, 'photoListDefunct'))
+    const {data:listPhotosDef}= useQuery('photosDef', () => getInfos(id, token, idDef, 'photoListDefunct'))
     console.log('listPhotosDef:', listPhotosDef)
+    if(listPhotosDef && listPhotosDef.result.length>0){
+        const newPhotos = listPhotosDef.result.filter((item)=>(item.date_crea>infosUser[0].last_log)) 
+        console.log('newPhotos:', newPhotos)
+    }
     // Retrieve all comments for a defunct
-    const {data:listComment}= useQuery('listComment', ()=>getInfos(id, token, idDef, 'getListComment'))
+    const {data:listComment}= useQuery('listComment', ()=> getInfos(id, token, idDef, 'getListComment'))
     console.log('listComment:', listComment)
 
     useEffect(() => {
@@ -104,7 +114,14 @@ const Environment=()=>{
                     </Link> */}
                 </div>
             {/* <?php endif ?> */}
-            {(defunctSelected.photo!=="" && auth )&& <div className="env__imageDef"><img className="img dim60" src={`http://localhost:3000/${defunctSelected.photo}`} alt="defunct"/></div>}
+            {(defunctSelected && defunctSelected.photo!=="" && auth )?
+                <div className="env__imageDef">
+                    <img className="img dim60" src={`http://localhost:3000/${defunctSelected.photo}`} alt="defunct"/>
+                </div> :
+                 <div className="env__imageDef">
+                    <img className="img dim60" src="./assets/site/noone.jpg" alt="defunct"/>
+                </div> 
+                }
                 <h2 className="env__title" >{defunctSelected.firstname} {defunctSelected.lastname}</h2>
                 <div className="env__date">
                     {defunctSelected.birthdate? <h4>{defunctSelected.birthdate}</h4>: <h4>Naissance non définie</h4>}
@@ -193,19 +210,6 @@ const Environment=()=>{
                 </div>
             </div>
         <EnvDef id={id} token={token} idDef={idDef} isAdmin={isAdmin} auth={auth} infosUser={infosUser}/>
-    {/* // Formulaire ajout de commentaire */}
-                {/* if (isset($_SESSION['user']['id'])) : ?> */}
-                    {/* <form className="env__comment_form">
-                        <input type="text" name="comment" className="env__comment_txt"/>
-                        <label htmlFor="comment">Commenter</label>
-                        <input type="hidden" name="id_def" className="id_def" value="<?=$id_def?>"/>
-                        <input type="hidden" name="photo_id" className="photo_id" value="<?=$r['id']?>"/>
-                        <input type="hidden" name="user_id" className="user_id" value="<?=$_SESSION['user']['id']?>"/>
-                    </form> */}
-            {/* <?php endif ?> */}
-                {/* </div> */}
-        {/* <?php endforeach ?> */}
-            {/* </div> */}
         {defunctsList.length===0 &&  
             <div className="env__no_user">
                 <h2 className="env_title">Pour visualiser cette fiche, vous devez être inscrit ou connecté.</h2>

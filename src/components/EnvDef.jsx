@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react"
 import { useQuery, useQueryClient } from "react-query"
-import { getInfos, setRegister } from "../services/api"
+import { deleter, getInfos, setRegister } from "../services/api"
 import { useForm } from "react-hook-form"
 
 const EnvDef = ({ id, token, idDef, isAdmin, auth, infosUser }) => {
+    console.log('isAdminENV:', isAdmin)
+    console.log('idDefENVDEF:', idDef)
     const {register, handleSubmit, reset} = useForm()
     const queryClient= useQueryClient()
   // Retrieve all photos from a defunct
@@ -36,7 +38,6 @@ const EnvDef = ({ id, token, idDef, isAdmin, auth, infosUser }) => {
         return key.startsWith('comment-') && value !== ""
       })
     const contentComment = filteredData[0][1]
-    console.log('contentComment:', contentComment)
     // Récupérer l'id de la photo
     const commentIds = filteredData.map(([key, value]) => {
         return key.split('-')[1]
@@ -46,6 +47,13 @@ const EnvDef = ({ id, token, idDef, isAdmin, auth, infosUser }) => {
       if (result){queryClient.invalidateQueries('listComment')}
       reset({[filteredData[0][0]]: ""})
   }
+
+  const deleteComment= async (idComment) =>{
+    const data = {idComment:idComment}
+    await deleter(id, 0, token, 'deleteComment', data )
+    queryClient.invalidateQueries('listComment')
+  }
+
 
   return (
     <>
@@ -63,16 +71,23 @@ const EnvDef = ({ id, token, idDef, isAdmin, auth, infosUser }) => {
 
             {/* Liste des commentaires de la photo + profil miniature des auteurs du commentaire */}
             <div key={item.id} className="env__comment">
-                <div className="comment_post">
+                <div className="env__comment_post">
                 {listComment && listComment.result.filter(comment => comment.photo_id === item.id).map(comment => (
-                    <div key={comment.id} className={`container_com_user ${!auth && 'env__blur_comment'}`}>
-                    <div className="env__profil">
-                        {(isAdmin && infosUser[0].id === comment.user_id) ? (
-                        <img className="img" src={`http://localhost:3000/${infosUser[0].photo}`} alt="profil" />
-                        ) : (
-                        <img className="img" src={userPhotos[comment.user_id] ? `http://localhost:3000/${userPhotos[comment.user_id]}` : "assets/site/noone.jpg"} alt="profil" />
+                    <div key={comment.id} className={`container_com_user ${!auth   && 'env__blur_comment'}`}>
+                        {/* Suppression d'un commentaire dont on est l'auteur */}
+                        {(auth && comment.user_id===id) && (
+                        <div className="env__comment_post-delete" onClick={()=>deleteComment(comment.id)}>
+                            <img className="dim10" src="./assets/site/delete-icon.png" alt="Supprimer" />
+                        </div>
                         )}
-                    </div>
+                        {/* Photo miniature */}
+                        <div className="env__profil">
+                            {(isAdmin && infosUser[0].id === comment.user_id) ? (
+                           <img className="img" src={infosUser[0].photo !== "" ? `http://localhost:3000/${infosUser[0].photo}` : "./assets/site/noone.jpg"} alt="profil" />
+                          ) : (
+                            <img className="img" src={userPhotos[comment.user_id] ? `http://localhost:3000/${userPhotos[comment.user_id]}` : "assets/site/noone.jpg"} alt="profil" />
+                            )}
+                        </div>
                     {comment.comment}
                     </div>
                 ))}

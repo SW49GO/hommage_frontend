@@ -49,7 +49,7 @@ const userSlice = createSlice({
   },
   reducers: {
     setUserInfos: (state, action)=>{
-      const {id, firstname, lastname, photo, pseudo, number_road, address, postal_code, city, email} = action.payload
+      const {id, firstname, lastname, photo, pseudo, number_road, address, postal_code, city, email, last_log} = action.payload
       state.userInfos = [{
         id: id || '',
         firstname: firstname || '',
@@ -60,7 +60,8 @@ const userSlice = createSlice({
         address: address || '',
         postal_code: postal_code || '',
         city: city || '',
-        email: email || ''
+        email: email || '',
+        last_log: last_log || ''
       }]
     },
     setNumberFriends : (state, action)=>{
