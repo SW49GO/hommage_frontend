@@ -3,15 +3,24 @@ import { useQuery, useQueryClient } from "react-query"
 import { deleter, getInfos, setRegister } from "../services/api"
 import { useForm } from "react-hook-form"
 
-const EnvDef = ({ id, token, idDef, isAdmin, auth, infosUser }) => {
-    console.log('isAdminENV:', isAdmin)
-    console.log('idDefENVDEF:', idDef)
+const EnvDef = ({ id, token, idDef, isAdmin, auth, infosUser, nbPhotos, nbComments }) => {
+    console.log('idENVDEF:', id)
     const {register, handleSubmit, reset} = useForm()
     const queryClient= useQueryClient()
   // Retrieve all photos from a defunct
-  const { data: listPhotosDef } = useQuery('photosDef', () => getInfos(id, token, idDef, 'photoListDefunct'))
+  const { data: listPhotosDef } = useQuery('photosDef', () => getInfos(id, token, idDef, 'photoListDefunct'),
+    {onSuccess: (data)=>{
+      const nbNewPhotos = data.result.filter(item => item.user_id !== id && new Date(item.date_crea) > new Date(infosUser[0].last_log)).length
+      console.log('nbNewPhotos:', nbNewPhotos)
+      nbPhotos(nbNewPhotos)
+    }})
   // Retrieve all comments for a defunct
-  const { data: listComment } = useQuery('listComment', () => getInfos(id, token, idDef, 'getListComment'))
+  const { data: listComment } = useQuery('listComment', () => getInfos(id, token, idDef, 'getListComment'),
+    {onSuccess:(data)=>{
+      const nbNewComments = data.result.filter((item =>item.user_id !== id && new Date(item.date_crea) > new Date(infosUser[0].last_log))).length
+      console.log('nbNewComments:', nbNewComments)
+      nbComments(nbNewComments)
+    }})
 
   const [userPhotos, setUserPhotos] = useState({})
 
@@ -62,18 +71,18 @@ const EnvDef = ({ id, token, idDef, isAdmin, auth, infosUser }) => {
         {listPhotosDef && listPhotosDef.result.length > 0 && listPhotosDef.result.map((item) => (
         <div key={item.id} className="env__photo">
             {/* Supprimer une photo dont on est l'auteur */}
-            {auth && isAdmin && (
+            {(auth && isAdmin) && (
               <div className="env__delete_photo">
                 <img className="dim20" src="./assets/site/delete-icon.png" alt="Supprimer" />
               </div>
             )}
-            <img className={`img ${!auth && 'env__blur_photo'}`} src={`http://localhost:3000/${item.name}`} alt="defunct" />
+            <img className={`img ${!auth ? 'env__blur_photo':''}`} src={`http://localhost:3000/${item.name}`} alt="defunct" />
 
             {/* Liste des commentaires de la photo + profil miniature des auteurs du commentaire */}
             <div key={item.id} className="env__comment">
                 <div className="env__comment_post">
                 {listComment && listComment.result.filter(comment => comment.photo_id === item.id).map(comment => (
-                    <div key={comment.id} className={`container_com_user ${!auth   && 'env__blur_comment'}`}>
+                    <div key={comment.id} className={`container_com_user ${!auth ? 'env__blur_comment':''}`}>
                         {/* Suppression d'un commentaire dont on est l'auteur */}
                         {(auth && comment.user_id===id) && (
                         <div className="env__comment_post-delete" onClick={()=>deleteComment(comment.id)}>

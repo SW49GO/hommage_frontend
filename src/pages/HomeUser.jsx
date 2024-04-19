@@ -3,7 +3,7 @@ import { useSelector, useDispatch} from "react-redux"
 import UserHeader from "./UserHeader"
 import Error from "./Error"
 import React, { useEffect, useState } from "react"
-import { setDefIdSelected } from "../features/store"
+import { setDefIdSelected, setSelectedDef} from "../features/store"
 import { useNavigate } from "react-router-dom"
 
 const HomeUser=()=>{
@@ -12,7 +12,6 @@ const HomeUser=()=>{
     const data = useSelector(selectUserInfos)
     const auth = useSelector(selectAuth)
     const defunctsList = useSelector(selectDefunctsList)
-    console.log('defunctList:', defunctsList)
     // State to update list of defunct
     const [hasDefuncts, setHasDefuncts] = useState(false)
     useEffect(()=>{
@@ -22,6 +21,14 @@ const HomeUser=()=>{
             setHasDefuncts(false)
         }
     },[defunctsList])
+
+    const handleDefunct=(data)=>{
+        console.log('dataHOMEUSER:', data)
+        const selectedDefInfos = defunctsList.filter((item)=>item.id===data)
+        dispatch(setSelectedDef(selectedDefInfos[0]))
+        dispatch(setDefIdSelected(data))
+        navigate('/environment')
+    }
 
     if(data){
         return (
@@ -34,7 +41,7 @@ const HomeUser=()=>{
             <div className="home_user__list">
                 {hasDefuncts ? <div><h3>Liste de défunts que vous gérez</h3>
                     { defunctsList.map(( item)=>(
-                            <p key={item.id} onClick={()=>{dispatch(setDefIdSelected(item.id)); navigate('/environment')}} className="button" style={{margin:'0.2rem'}}>{item.lastname} {item.firstname}</p>
+                            <p key={item.id} onClick={()=>handleDefunct(item.id)} className="button" style={{margin:'0.2rem'}}>{item.lastname} {item.firstname}</p>
                             ))}
                 </div>: <div></div>}
             </div>
@@ -65,7 +72,7 @@ const HomeUser=()=>{
     }else{
         return(
             <>
-            <Error/>
+            <Error message={'Erreur réseau'}/>
             </>
         )
     }

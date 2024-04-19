@@ -17,7 +17,6 @@ const Createform = ()=>{
 
     const {register, handleSubmit} = useForm()
     const saveDef = (data)=>{
-        console.log('data:', data)
         const sendDefunct=async()=>{
             const result =  await setRegister(id, token, data, 'setDefunct')
             console.log('result:', result)

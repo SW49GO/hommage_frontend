@@ -7,7 +7,7 @@ import { Link } from "react-router-dom"
 import React,{ useState, useRef,useEffect } from "react"
 import { FaArrowRight } from "react-icons/fa"
 import { setFiles,setRegister } from "../services/api"
-import { setInfosAdmin, setSelectedDef } from "../features/store"
+import { setInfosAdmin } from "../features/store"
 import EnvDef from "../components/EnvDef"
 
 
@@ -31,21 +31,19 @@ const Environment=()=>{
     const defunctsList = useSelector(selectDefunctsList)
     const defunct = defunctsList.filter((item)=>(item.id===idDef))
     const adminInfos = useSelector(selectAdminInfos)
-    console.log('adminInfos:', adminInfos)
+    // console.log('adminInfos:', adminInfos)
     const otherAdmin = useSelector(selectNewAdmin)
     const isAdmin = defunct.length>0 && adminInfos.some((item)=>(item.defunct_id===idDef))
     console.log('isAdmin:', isAdmin)
     const listFriends = useSelector(selectListFriends)
+    console.log('listFriends:', listFriends)
     // console.log('listFriends:', listFriends)
     const [isFriend, setIsFriend] = useState(false)
 
     // Retrieve all photos from a defunct
     const {data:listPhotosDef}= useQuery('photosDef', () => getInfos(id, token, idDef, 'photoListDefunct'))
     console.log('listPhotosDef:', listPhotosDef)
-    if(listPhotosDef && listPhotosDef.result.length>0){
-        const newPhotos = listPhotosDef.result.filter((item)=>(item.date_crea>infosUser[0].last_log)) 
-        console.log('newPhotos:', newPhotos)
-    }
+
     // Retrieve all comments for a defunct
     const {data:listComment}= useQuery('listComment', ()=> getInfos(id, token, idDef, 'getListComment'))
     console.log('listComment:', listComment)
@@ -58,7 +56,7 @@ const Environment=()=>{
                     const newAdminInfos={firstname:result.admin.firstname, lastname:result.admin.lastname}
                     dispatch(setInfosAdmin(newAdminInfos))
                     // Verify if otherAdmin is in the list of Friends for icone
-                    if (result.admin.id===listFriends.friend_id){
+                    if (listFriends!==undefined && result.admin.id===listFriends.friend_id){
                         setIsFriend(true)
                     }
                 }
@@ -102,6 +100,14 @@ const Environment=()=>{
             console.error('Une erreur est survenue lors du téléchargement du fichier : ', error)
         }
     }
+    const [nbPhotos, setNbPhotos] = useState(0)
+    const handleNbPhotos = (data) =>{
+        setNbPhotos(data)
+    }
+    const [nbComments, setNbComments] = useState(0)
+    const handleNbComments = (data) =>{
+        setNbComments(data)
+    }
 
     return(
         <>
@@ -114,7 +120,7 @@ const Environment=()=>{
                     </Link> */}
                 </div>
             {/* <?php endif ?> */}
-            {(defunctSelected && defunctSelected.photo!=="" && auth )?
+            {(defunctSelected && defunctSelected.photo !=="" && auth )?
                 <div className="env__imageDef">
                     <img className="img dim60" src={`http://localhost:3000/${defunctSelected.photo}`} alt="defunct"/>
                 </div> :
@@ -157,7 +163,7 @@ const Environment=()=>{
     <section>
      {/* // Dossier caché contenant toutes les photos du défunt */}
     {isOpen &&
-        <div  className={`env__photos_list ${!auth && 'env__blur_photo'}`}>
+        <div  className={`env__photos_list ${!auth ? 'env__blur_photo': ''}`}>
             <img className="dim20 env__photos-close" src="./assets/site/delete-icon.png" alt="Fermer" onClick={()=>setIsOpen(false)}/>
             <>
                 {listPhotosDef.result.length>0 ? 
@@ -173,21 +179,19 @@ const Environment=()=>{
         <hr/>
     </section>
     <section>
-        {/* <?php  */}
     {/* // Nombre de commentaires et photos depuis la dernière connexion */}
-            {/* if (isset($_SESSION['user']['id']) && $defunct_infos['user_id'] == $_SESSION['user']['id']) : ?> */}
+        {(auth && isAdmin) &&<>
         <div className="env__listing">
             <p className="new_comments">Depuis votre dernière connexion :</p>
-            {/* <p className="new_photos">Photos ajoutées: <span><?=$recentPhoto?></span></p>
-            <p className="new_comments">Commentaires ajoutés: <span><?=$recentComment?></span></p> */}
+            <p className="new_photos">Photos ajoutées: <span>{nbPhotos}</span></p>
+            <p className="new_comments">Commentaires ajoutés: <span>{nbComments}</span></p>
         </div>
-        <hr/>
-        {/* <?php endif ?>
-        <?php */}
+        <hr/></>}
+
     {/* // Ajouter une photo dans l'environnement utilisateur */}
         <div>
         </div>
-        <form enctype="multipart/form-data" id="form_env" className={!auth && 'hidden'}>
+        <form encType="multipart/form-data" id="form_env" className={!auth ? 'hidden':''}>
             <label htmlFor="file_env"></label>
             <input type="file" name="file_env" id="file_env" ref={fileInputRef} onChange={handleFileChange}/>
             <div className="env__add_photo">
@@ -209,7 +213,7 @@ const Environment=()=>{
                     </div>
                 </div>
             </div>
-        <EnvDef id={id} token={token} idDef={idDef} isAdmin={isAdmin} auth={auth} infosUser={infosUser}/>
+        <EnvDef id={id} token={token} idDef={idDef} isAdmin={isAdmin} auth={auth} infosUser={infosUser} nbPhotos={handleNbPhotos} nbComments={handleNbComments}/>
         {defunctsList.length===0 &&  
             <div className="env__no_user">
                 <h2 className="env_title">Pour visualiser cette fiche, vous devez être inscrit ou connecté.</h2>

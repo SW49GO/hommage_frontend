@@ -42,11 +42,11 @@ export async function verifyAccount(data){
 }
 
 export async function getInfos(id, token, idDef, ctrl, other) {
-    // console.log('other:', other)
-    // console.log('idDef:', idDef)
-    // console.log('token:', token)
-    // console.log('ctrl:', ctrl)
-    //  console.log('id:', id)
+    console.log('other:', other)
+    console.log('idDef:', idDef)
+    console.log('token:', token)
+    console.log('ctrl:', ctrl)
+     console.log('id:', id)
 
     if (!id) {
       return 'Missing data'

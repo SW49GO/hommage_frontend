@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react'
-import { selectDefunctsList, selectNumberFriends, selectNumberMessages, selectUserInfos,selectToken, selectUserId} from "../features/selector"
+import { selectDefunctsList, selectNumberFriends, selectNumberMessages, selectUserInfos,selectToken, selectUserId, selectDefunct} from "../features/selector"
 import { useSelector, useDispatch } from "react-redux"
 import { Link } from "react-router-dom"
 import { useState} from "react"
 import { setFiles, updatePhoto, getInfos, updater} from "../services/api"
-import { updateUserInfos, setAuth, setDefunctsList, setDefIdSelected, setNumberFriends, setSelectedDef, setListFriends} from '../features/store'
+import { updateUserInfos, setAuth, setDefunctsList, setDefIdSelected, setNumberFriends, setSelectedDef, setListFriends, setId} from '../features/store'
 import { useQuery, useQueryClient } from 'react-query'
 import {useNavigate} from 'react-router-dom'
 
@@ -76,9 +76,10 @@ const UserHeader = () =>{
     const { data:defunctArray } = useQuery('infoDef', () => getInfos(id, token,0, 'getUserDefunctList'),
     {   retry:1,
         onSuccess: (data) => {if (data) {
+            console.log('dataHEADER:', data)
             if(data.result.length>0){
+                dispatch(setDefunctsList(data.result))
             }
-            dispatch(setDefunctsList(data.result))
         }},
         onError:(err)=>{console.log(err)}
     })

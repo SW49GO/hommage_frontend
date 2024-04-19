@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 import {useForm} from 'react-hook-form'
-import { selectDefunct,  selectUserId, selectToken, selectIdDef, selectDefunctsList} from '../features/selector'
+import { selectDefunct,  selectUserId, selectToken, selectIdDef, selectDefunctsList, selectAuth} from '../features/selector'
 import {useSelector, useDispatch} from 'react-redux'
 import { setFormatDate } from '../services/formatData'
 import { setFiles, updatePhoto } from '../services/api'
@@ -17,6 +17,7 @@ const ModifyDef=()=>{
     const upperCaseFirstLetter= useUpperCaseFistLetter
     const token = useSelector(selectToken)
     const id = useSelector(selectUserId)
+    const auth = useSelector(selectAuth)
     const {register, handleSubmit} = useForm()
     const fileInputRef = useRef(null)
     const infosDefunct = useSelector(selectDefunct)
@@ -86,7 +87,7 @@ const ModifyDef=()=>{
         }
     }
 
-    if(infosDefunct){
+    if(auth &&infosDefunct){
     return(
         <>
         <section>
@@ -132,7 +133,7 @@ const ModifyDef=()=>{
     )
     }else{
         return(
-            <><Error/></>
+            <><Error message={'Vous devez être identifié pour utiliser cette fonctionnalité'}/></>
         )
     }
 }

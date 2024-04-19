@@ -1,15 +1,18 @@
 import { useSelector, useDispatch } from "react-redux"
 import { getInfos } from "../services/api"
 import { useQuery } from "react-query"
-import { selectToken, selectUserId} from "../features/selector"
+import { selectAuth, selectToken, selectUserId} from "../features/selector"
 import { setDefIdSelected, setSelectedDef } from "../features/store"
 import { useNavigate } from "react-router-dom"
+import Error from './Error'
 
 const Search = () =>{
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const id = useSelector(selectUserId)
     const token = useSelector(selectToken)
+    const auth = useSelector(selectAuth)
+    console.log('authSARCH:', auth)
     const {isError, data} = useQuery('defunctList',() => getInfos(id, token,0, 'getAllDefuncts'))
     /**
      * Function to select a defunct
@@ -18,11 +21,12 @@ const Search = () =>{
     const selectedDefunct= (idDef)=>{
         dispatch(setDefIdSelected(idDef))
         const selectedDef = data.result.filter((item)=>(item.id===idDef))
+        console.log('selectedDefSEARCH:', selectedDef)
         dispatch(setSelectedDef(selectedDef[0]))
         navigate('/environment')
     }
 
-if(!isError){
+if(!isError && auth){
         return (
             <>
                 <h1 className="search__title">Personne recherchée sur le site.</h1>
@@ -44,6 +48,10 @@ if(!isError){
                 </div>
             </>
         )
-    }
+    }else{
+        return(
+        <Error message={'Vous devez être identifié pour utiliser cette fonctionnalité'}/>
+        )
+  }
 }
 export default Search

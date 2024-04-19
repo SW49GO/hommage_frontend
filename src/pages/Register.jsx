@@ -9,13 +9,12 @@ const Register= () =>{
     const navigate = useNavigate()
     const upperCaseFirstLetter = useUpperCaseFistLetter
     const [isOpen, setIsOpen] = useState(false)
-    const dataForm = (data) =>{
-        async function signRegister(){
+    console.log('isOpen:', isOpen)
+    const dataForm = async (data) =>{
             await signIn(data)
             setIsOpen(true)
-        }
-        signRegister()
     }
+
     return (<>
          <div className="register" style={isOpen ? { filter: 'blur(0.513rem)' } : {}}>
             <h1 className="register__title">Inscription</h1>
@@ -46,12 +45,13 @@ const Register= () =>{
                 </form>
             </div>
         </div> 
-        <div className="confirm">
-            {isOpen && <div className="confirm__signIn">
-                <p>Inscription validée !</p>
-                <Link className="button button-a" to={'/connexion'}>Se Connecter</Link>
-                </div>}
-            </div>
+        {isOpen && 
+            <div className="confirm">
+                <div className="confirm__signIn">
+                    <p>Inscription validée !</p>
+                    <Link className="button button-a" to={'/connexion'}>Se Connecter</Link>
+                </div>
+            </div>}
             </>
     )
 }
