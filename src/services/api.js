@@ -18,10 +18,10 @@ export async function signIn(data){
   }
 }
 
-export async function verifyAccount(data){
-  // console.log('data:', data)
+export async function verifyAccount(data, ctrl ){
+   console.log('data:', data)
   try{
-    const response = await fetch(`http://localhost:3000/api/user/connect/verifyAccount`, {
+    const response = await fetch(`http://localhost:3000/api/user/connect/${ctrl}`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data),

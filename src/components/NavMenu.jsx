@@ -4,7 +4,7 @@ import { useSelector,useDispatch } from "react-redux"
 import { selectAuth, selectToken, selectUserId } from "../features/selector"
 import '../index.css'
 import { useState } from "react"
-import { setAuth, setId } from "../features/store"
+import { setAuth } from "../features/store"
 import { updater } from "../services/api"
 
 const NavMenu=()=>{

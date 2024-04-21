@@ -35,7 +35,7 @@ const Connexion = ()=>{
                 })
     const {handleSubmit,register} = useForm()
     const account = async(data) =>{
-        const result = await verifyAccount(data)
+        const result = await verifyAccount(data, 'verifyAccount')
         console.log('resultCONNEXION:', result)
         if(!result.message){
             dispatch(setToken(result.token))

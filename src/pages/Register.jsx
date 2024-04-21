@@ -1,12 +1,11 @@
 import { useForm } from "react-hook-form"
 import { useUpperCaseFistLetter } from "../hooks/upperCaseFirstLetter"
 import { signIn } from "../services/api"
-import {useNavigate, Link} from 'react-router-dom'
+import {Link} from 'react-router-dom'
 import { useState } from "react"
 
 const Register= () =>{
     const {register, handleSubmit} =useForm()
-    const navigate = useNavigate()
     const upperCaseFirstLetter = useUpperCaseFistLetter
     const [isOpen, setIsOpen] = useState(false)
     console.log('isOpen:', isOpen)
