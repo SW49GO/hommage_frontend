@@ -27,7 +27,7 @@ const Profil = () =>{
     // Take the difference between info in store and form
         for (const key in formData) {
             if (Object.hasOwnProperty.call(formData, key)) {
-                if (userInfos[0][key] !== formData[key]) {
+                if (userInfos[key] !== formData[key]) {
                     newData[key] = formData[key]
                 }
             }
@@ -52,32 +52,32 @@ const Profil = () =>{
         <div className="profil">
             <h1 className="profil__title">Mes informations</h1>
             <img className="img dim40" src="./assets/site/Info.png" alt="icon information"/>
-            <h3 className="profil__name">{userInfos[0].lastname} {userInfos[0].firstname}</h3>
+            <h3 className="profil__name">{userInfos.lastname} {userInfos.firstname}</h3>
             <div className="profil__form">
                 <form onSubmit={handleSubmitInfosUser(handleInfosUser)}>
                     <div className="profil__form_info">
                         <label htmlFor="email">Votre email :</label>
-                        <input name="email" id="email" type="email" defaultValue={userInfos[0].email} {...registerInfosUser('email')}/>
+                        <input name="email" id="email" type="email" defaultValue={userInfos.email} {...registerInfosUser('email')}/>
                         <label htmlFor="pseudo">Votre pseudo :</label>
-                        {userInfos[0].pseudo ? <><input name="pseudo" id="pseudo" type="text" defaultValue={userInfos[0].pseudo} {...registerInfosUser ('pseudo', {setValueAs: (value)=> upperCaseFirstLetter(value)})}/></>:
+                        {userInfos.pseudo ? <><input name="pseudo" id="pseudo" type="text" defaultValue={userInfos.pseudo} {...registerInfosUser ('pseudo', {setValueAs: (value)=> upperCaseFirstLetter(value)})}/></>:
                         <><label htmlFor="pseudo">Vous n'avez pas de pseudo</label>
                         <input name="pseudo" id="pseudo" type="text"/></>}
                         <p>Votre adresse :</p>
                         <label htmlFor="number_road">N° :</label>
-                        <input type="number" name="number_road" id="number_road" defaultValue={userInfos[0].number_road} {...registerInfosUser ('number_road')}/>
+                        <input type="number" name="number_road" id="number_road" defaultValue={userInfos.number_road} {...registerInfosUser ('number_road')}/>
                         <label htmlFor="address">Adresse :</label>
-                        <input type="text" name="address" id="address" defaultValue={userInfos[0].address} {...registerInfosUser ('address', {setValueAs: (value)=> upperCaseFirstLetter(value)})}/>
+                        <input type="text" name="address" id="address" defaultValue={userInfos.address} {...registerInfosUser ('address', {setValueAs: (value)=> upperCaseFirstLetter(value)})}/>
                         <label htmlFor="postal_code">Code Postal :</label>
-                        <input type="number" name="postal_code" id="postal_code" defaultValue={userInfos[0].postal_code} {...registerInfosUser ('postal_code')}/>
+                        <input type="number" name="postal_code" id="postal_code" defaultValue={userInfos.postal_code} {...registerInfosUser ('postal_code')}/>
                         <label htmlFor="">Ville :</label>
-                        <input type="text" name="city" defaultValue={userInfos[0].city} {...registerInfosUser ('city', {setValueAs: (value)=> upperCaseFirstLetter(value)})}/>
+                        <input type="text" name="city" defaultValue={userInfos.city} {...registerInfosUser ('city', {setValueAs: (value)=> upperCaseFirstLetter(value)})}/>
                     </div> 
                     <label htmlFor="modify" className="message">- Modifier les champs que vous souhaitez mettre à jour</label>
                     <input type="submit" name="submit" className="button" id="modify" value="Modifier"/>
                     {defunctList.length >0 && <div className="profil__admin">
                         <h4>Vos {defunctList.length} fiches :</h4>
                         {defunctList.map((item)=>(
-                            <p className="profil__admin-listDef" key={item.id} onClick={()=>{selectedDefunct(item.id)}}>{item.lastname} {item.firstname}</p>
+                            <p className="profil__admin-listDef button-a" key={item.id} onClick={()=>{selectedDefunct(item.id)}}>{item.lastname} {item.firstname}</p>
                         ))}
                     </div>}
                 </form>

@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
-import { verifyAccount } from "../services/api"
+import { verifyAccount,changePass } from "../services/api"
 import { useState } from "react"
-import { useDispatch } from "react-redux"
-import { setToken, setId, setAuth } from "../features/store"
+import { useDispatch, useSelector } from "react-redux"
+import { setToken, setId } from "../features/store"
+import { selectUserId } from "../features/selector"
 
 const Lost = ()=>{
     const dispatch= useDispatch()
@@ -14,15 +15,15 @@ const Lost = ()=>{
     const [badPass, setBadPass] = useState(false)
     const [codeOpen, setCodeOpen] = useState(false)
     const [passOpen, setPassOpen] = useState(false)
-    const [email, setEmail] = useState(null)
+    const id = useSelector(selectUserId)
 
-    console.log('email:', email)
     const handleEmail=async(data)=>{
         const res = await verifyAccount(data,'verifyEmail')
-        if(res.result.length===1){
-            setEmail(data.email)
+        if(res.result.length>0){ 
+            dispatch(setId(res.result[0].id))
+            dispatch(setToken(res.result[0].password))
             setCodeOpen(true)
-            setBadEmail(false)
+              setBadEmail(false)
         }else{
             setBadEmail(true)
         }
@@ -36,20 +37,14 @@ const Lost = ()=>{
     const handlePassword=async (data)=>{
         if(data.new_password===data.pass_again){
             setBadPass(false)
-            const datas = {email:email, password:data.new_password}
-            const result = await verifyAccount(datas, 'verifyAccount')
-            if(!result.message){
-                dispatch(setToken(result.token))
-                dispatch(setId(result.userId))
-                dispatch(setAuth(true))
-                navigate('/homeUser')
-            }
+                const newPass={id:id, password:data.new_password}
+                await changePass(newPass,'changePass').then(()=>{
+                navigate('/connexion')
+                })
         }else{
             setBadPass(true)
         }
     }
-
-
 
     return (
     <div className="lost">

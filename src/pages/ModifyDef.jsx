@@ -96,7 +96,7 @@ const ModifyDef=()=>{
                 <h3>{infosDefunct.lastname} {infosDefunct.firstname}</h3>
                 <form id="modifydef" encType="multipart/form-data">
                     <div className="modifydef__form">
-                        {infosDefunct.photo !=="" ?
+                        {infosDefunct.photo !== undefined ?
                             <img className="img dim200" src={`http://localhost:3000/${infosDefunct.photo}?cache=${cacheBuster}`} alt="profil"/>:<img className="img dim200" src="./assets/site/noone.jpg" alt="profil"/>
                         }
   

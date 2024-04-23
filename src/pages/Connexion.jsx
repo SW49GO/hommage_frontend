@@ -17,11 +17,11 @@ const Connexion = ()=>{
     useEffect(() => {
         if(id!==null){
         const data = {id:id, token:token,idDef:0,ctrl:'getUserData',other:null}
-        dispatch(fetchInfos(data))
-        navigate('/homeUser')
+        dispatch(fetchInfos(data)).then(() => {
+            navigate('/homeUser')
+            })
         }
       }, [dispatch, id, token, navigate])
-
 
     const account = async(data) =>{
         const result = await verifyAccount(data, 'verifyAccount')
