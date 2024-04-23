@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { Link } from "react-router-dom"
 import { useState} from "react"
 import { setFiles, updatePhoto, getInfos, updater} from "../services/api"
-import { updateUserInfos, setAuth, setDefunctsList, setDefIdSelected, setNumberFriends, setSelectedDef, setListFriends} from '../features/store'
+import { updateUserInfos, setAuth, setDefunctsList, setDefIdSelected, setNumberFriends, setSelectedDef, setListFriends, setToken, setId} from '../features/store'
 import { useQuery, useQueryClient } from 'react-query'
 import {useNavigate} from 'react-router-dom'
 
@@ -42,8 +42,8 @@ const UserHeader = () =>{
     const token = useSelector(selectToken)
     const id = useSelector(selectUserId)
     let photoBDD
-    if(infosUser[0]){
-        photoBDD = infosUser[0].photo
+    if(infosUser){
+        photoBDD = infosUser.photo
     }
     const [image, setImage] = useState(photoBDD !== '' ? photoBDD : 'assets/site/noone.jpg')
     // console.log('image:', image)
@@ -60,7 +60,7 @@ const UserHeader = () =>{
      */
     const handleFileChange = (e) => {
         async function saveFile (){
-            const pathName = await setFiles(id, 0 ,'profil', token, e.target.files[0])
+            const pathName = await setFiles(id, 0 ,'profil', token, e.target.files)
             // console.log('pathName:', pathName)
             if(pathName){
                 setImage(pathName)
@@ -76,8 +76,8 @@ const UserHeader = () =>{
     const { data:defunctArray } = useQuery('infoDef', () => getInfos(id, token,0, 'getUserDefunctList'),
     {   retry:1,
         onSuccess: (data) => {if (data) {
-            console.log('dataHEADER:', data)
-            if(data.result.length>0){
+            console.log('dataHEADER-DEFLIST:', data)
+            if(data.result){
                 dispatch(setDefunctsList(data.result))
             }
         }},
@@ -137,11 +137,11 @@ const UserHeader = () =>{
         dispatch(setSelectedDef(selectedDef[0]))
         navigate('/modifyDef')
     }
-    if(infosUser[0]){
+    if(infosUser){
         return(
             <>
             <section className="user">
-                <h3>{infosUser[0].pseudo ? infosUser[0].pseudo: `${infosUser[0].lastname}' '${infosUser[0].firstname}`}</h3>
+                <h3>{infosUser.pseudo ? infosUser.pseudo: `${infosUser.lastname}' '${infosUser.firstname}`}</h3>
                 <form className="user__form" encType="multipart/form-data" id="form_user">
                     <div className="user__photo">
                         {photoBDD!=='' ?<img className="img" src={`http://localhost:3000/${image}?cache=${cacheBuster}`} alt="user"/>:<img className="img" src={`${image}?cache=${cacheBuster}`} alt="user"/>}
@@ -162,7 +162,7 @@ const UserHeader = () =>{
                         </Link>
                     </div>
                     <div className="user__fix">
-                        <Link to="/" className="user__mini_icons" title="Déconnecter" onClick={()=>{dispatch(setAuth(false));localStorage.removeItem('persist:localStorageUser');localStorage.removeItem('persist:localStorageUtil');updater(id,token,0,'updateOnline')}}>
+                        <Link to="/" className="user__mini_icons" title="Déconnecter" onClick={()=>{dispatch(setAuth(false));dispatch(setId(null));dispatch(setToken(null));localStorage.removeItem('persist:localStorageUser');localStorage.removeItem('persist:localStorageUtil');updater(id,token,0,'updateOnline')}}>
                                 <img className="img dim40" src="./assets/site/power-icon.png" alt="icone deconnexion"/>
                         </Link>
                         <Link to="/homeUser" className="user__mini_icons" title="Accueil utilisateur">

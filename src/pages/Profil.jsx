@@ -9,12 +9,35 @@ const Profil = () =>{
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const upperCaseFirstLetter = useUpperCaseFistLetter
-    const {register, handleSubmit}= useForm()
+    const { register: registerInfosUser, handleSubmit: handleSubmitInfosUser } = useForm()
+    const { register: registerVerifyEmailTransfer, handleSubmit: handleSubmitVerifyEmailTransfer } = useForm()
+    const { handleSubmit: handleSubmitDeleteAccount } = useForm()
     const userInfos = useSelector(selectUserInfos)
+    console.log('userInfos:', userInfos)
     const defunctList = useSelector(selectDefunctsList)
     console.log('defunctList:', defunctList)
 
     const handleInfosUser = (data)=>{
+    const formData = {
+        ...data,
+        number_road: parseInt(data.number_road),
+        postal_code: parseInt(data.postal_code)
+    }
+    const newData = {}
+    // Take the difference between info in store and form
+        for (const key in formData) {
+            if (Object.hasOwnProperty.call(formData, key)) {
+                if (userInfos[0][key] !== formData[key]) {
+                    newData[key] = formData[key]
+                }
+            }
+        }
+        console.log('newData:', newData)
+    }
+
+    const verifyEmailtransfer = (data)=>{
+    }
+    const deleteAccount = ()=>{
 
     }
 
@@ -31,23 +54,23 @@ const Profil = () =>{
             <img className="img dim40" src="./assets/site/Info.png" alt="icon information"/>
             <h3 className="profil__name">{userInfos[0].lastname} {userInfos[0].firstname}</h3>
             <div className="profil__form">
-                <form onSubmit={handleSubmit(handleInfosUser)}>
+                <form onSubmit={handleSubmitInfosUser(handleInfosUser)}>
                     <div className="profil__form_info">
                         <label htmlFor="email">Votre email :</label>
-                        <input name="email" id="email" type="email" defaultValue={userInfos[0].email}/>
+                        <input name="email" id="email" type="email" defaultValue={userInfos[0].email} {...registerInfosUser('email')}/>
                         <label htmlFor="pseudo">Votre pseudo :</label>
-                        {userInfos[0].pseudo ? <><input name="pseudo" id="pseudo" type="text" defaultValue={userInfos[0].pseudo} {...register ('pseudo', {setValueAs: (value)=> upperCaseFirstLetter(value)})}/></>:
+                        {userInfos[0].pseudo ? <><input name="pseudo" id="pseudo" type="text" defaultValue={userInfos[0].pseudo} {...registerInfosUser ('pseudo', {setValueAs: (value)=> upperCaseFirstLetter(value)})}/></>:
                         <><label htmlFor="pseudo">Vous n'avez pas de pseudo</label>
                         <input name="pseudo" id="pseudo" type="text"/></>}
                         <p>Votre adresse :</p>
                         <label htmlFor="number_road">N° :</label>
-                        <input type="text" name="number_road" id="number_road" defaultValue={userInfos[0].number_road} {...register ('number_road')}/>
+                        <input type="number" name="number_road" id="number_road" defaultValue={userInfos[0].number_road} {...registerInfosUser ('number_road')}/>
                         <label htmlFor="address">Adresse :</label>
-                        <input type="text" name="address" id="address" defaultValue={userInfos[0].address} {...register ('address', {setValueAs: (value)=> upperCaseFirstLetter(value)})}/>
+                        <input type="text" name="address" id="address" defaultValue={userInfos[0].address} {...registerInfosUser ('address', {setValueAs: (value)=> upperCaseFirstLetter(value)})}/>
                         <label htmlFor="postal_code">Code Postal :</label>
-                        <input type="number" name="postal_code" id="postal_code" defaultValue={userInfos[0].postal_code} {...register ('postal_code')}/>
+                        <input type="number" name="postal_code" id="postal_code" defaultValue={userInfos[0].postal_code} {...registerInfosUser ('postal_code')}/>
                         <label htmlFor="">Ville :</label>
-                        <input type="text" name="city" defaultValue={userInfos[0].city} {...register ('city', {setValueAs: (value)=> upperCaseFirstLetter(value)})}/>
+                        <input type="text" name="city" defaultValue={userInfos[0].city} {...registerInfosUser ('city', {setValueAs: (value)=> upperCaseFirstLetter(value)})}/>
                     </div> 
                     <label htmlFor="modify" className="message">- Modifier les champs que vous souhaitez mettre à jour</label>
                     <input type="submit" name="submit" className="button" id="modify" value="Modifier"/>
@@ -58,16 +81,16 @@ const Profil = () =>{
                         ))}
                     </div>}
                 </form>
-                <form>
+                <form onSubmit={handleSubmitVerifyEmailTransfer(verifyEmailtransfer)}>
                     <div className="profil__change">
                         <label htmlFor ="new_user">Transférer vos fiches à un autre utilisateur.</label>
                         <label>Entrer son Email :</label>
-                        <input type="email" name="new_user" placeholder="email@delapersonne.ici"/>
+                        <input type="email" name="new_user" placeholder="email@delapersonne.ici" {...registerVerifyEmailTransfer('new_user')}/>
                         {/* <?=$mess_transfer?> */}
                         <input className="button" type="submit" name="new_admin" id="new_user"/>
                     </div>
                 </form>
-                <form>
+                <form onSubmit={handleSubmitDeleteAccount(deleteAccount)}>
                     <h3>- Désincription -</h3>
                     {/* <?php if (empty($_SESSION['verif_email'])) :?> */}
                     <input className="button <?=$hidden?>" type="submit" name="signOff" value="Se désinscrire"/>

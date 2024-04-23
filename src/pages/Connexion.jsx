@@ -1,54 +1,39 @@
 import { Link, useNavigate } from "react-router-dom"
-import { useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useState, useEffect } from "react"
+import { useDispatch} from "react-redux"
 import { useForm } from "react-hook-form"
 import { verifyAccount } from "../services/api"
-import { setAdminInfos, setAuth, setId, setToken, setUserInfos } from "../features/store"
-import { getInfos } from "../services/api"
-import { selectToken, selectUserId } from "../features/selector"
-import { useQuery, useQueryClient } from 'react-query'
-import { updater } from "../services/api"
+import { setId, setToken} from "../features/store"
+import { fetchInfos } from "../middlewares/thunks"
 
 const Connexion = ()=>{
     const dispatch = useDispatch()
+    const [id, setNewId] = useState(null)
+    const [token, setNewToken] = useState(null)
     const navigate = useNavigate()
-    const id = useSelector(selectUserId)
-    const token = useSelector(selectToken)
-    const queryClient = useQueryClient()
-
     const [message,setMessage]=useState(false)
-    const [connect, setConnect] = useState(false)
-    console.log('connect:', connect)
-
-    const { isError} = useQuery('infoUser',  () =>  getInfos(id, token,0, 'getUserData'),
-                { enable : connect,
-                    retry:1,
-                    onSuccess:  (data) => {if (data!=='Missing data') {
-                        dispatch(setUserInfos(data.userData[0]))
-                        const adminInfos = data.userData.filter((item, index) => index !== 0)
-                        dispatch(setAdminInfos(adminInfos))
-                        // Update the connexion informations
-                        updater(id,token,null, 'updateLastLogin')
-                        updater(id, token,null,'updateNewLogin')
-                        updater(id,token,1,'updateOnline')
-                    }}
-                })
     const {handleSubmit,register} = useForm()
+
+    useEffect(() => {
+        if(id!==null){
+        const data = {id:id, token:token,idDef:0,ctrl:'getUserData',other:null}
+        dispatch(fetchInfos(data))
+        navigate('/homeUser')
+        }
+      }, [dispatch, id, token, navigate])
+
+
     const account = async(data) =>{
         const result = await verifyAccount(data, 'verifyAccount')
-        console.log('resultCONNEXION:', result)
         if(!result.message){
             dispatch(setToken(result.token))
+            setNewToken(result.token)
             dispatch(setId(result.userId))
-            dispatch(setAuth(true))
-            setConnect(true)
-            queryClient.invalidateQueries('infoUser')
-            navigate('/homeUser')
+            setNewId(result.userId)
         }else{
             setMessage(true)
         }
       }
-if(!isError){
         return (
             <div className="connexion">
                 {message ? <p className="message">Identifiants Incorrect</p>:''}
@@ -69,5 +54,5 @@ if(!isError){
             </div>
         )
     }
-}
+
 export default Connexion

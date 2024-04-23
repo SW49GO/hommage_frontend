@@ -5,7 +5,6 @@ import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { setToken, setId, setAuth } from "../features/store"
 
-
 const Lost = ()=>{
     const dispatch= useDispatch()
     const navigate = useNavigate()

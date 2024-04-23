@@ -151,7 +151,7 @@ const Environment=()=>{
             <div className="env__add_friend">
                 <p><u>Gestionnaire de la fiche :</u></p>
                 <div className="admin_user">
-                    {isAdmin ? <p>{infosUser[0].firstname} {infosUser[0].lastname}</p>:<div><p>{otherAdmin.firstname} {otherAdmin.lastname}</p>
+                    {isAdmin ? <p>{infosUser.firstname} {infosUser.lastname}</p>:<div><p>{otherAdmin.firstname} {otherAdmin.lastname}</p>
                     {!isFriend && <img className="img dim20 friend_add" src="./assets/site/friend.png" alt="icone ajouter"/>}</div>}
                 </div>
             </div>

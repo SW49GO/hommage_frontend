@@ -4,7 +4,7 @@ import { useSelector,useDispatch } from "react-redux"
 import { selectAuth, selectToken, selectUserId } from "../features/selector"
 import '../index.css'
 import { useState } from "react"
-import { setAuth } from "../features/store"
+import { setAuth, setId, setToken } from "../features/store"
 import { updater } from "../services/api"
 
 const NavMenu=()=>{
@@ -22,7 +22,7 @@ const NavMenu=()=>{
             <p id="nav__bar-close" className={`nav__bar-a close ${classN}`} onClick={()=>{setClassN('');setIsOpen(false)}}>x</p>
             <ul>
                 <li><Link className="nav__bar-a" to="/" onClick={()=>{setClassN('');setIsOpen(false)}}><FaHome/>&nbsp; Accueil</Link></li>
-                {auth ? <li><Link className="nav__bar-a" to={'/'} onClick={()=>{setClassN('');setIsOpen(false); dispatch(setAuth(false));updater(id,token,0,'updateOnline')}}><FaPowerOff/>&nbsp;Déconnexion</Link>
+                {auth ? <li><Link className="nav__bar-a" to={'/'} onClick={()=>{setClassN('');setIsOpen(false); dispatch(setAuth(false));dispatch(setId(null));dispatch(setToken(null));updater(id,token,0,'updateOnline')}}><FaPowerOff/>&nbsp;Déconnexion</Link>
                 </li>:<><li><Link className="nav__bar-a" to={'/connexion'} onClick={()=>{setClassN('');setIsOpen(false)}}><FaPowerOff/>&nbsp;Connexion</Link>
                 </li> 
                 <li><Link className="nav__bar-a" to={'/register'} onClick={()=>{setClassN('');setIsOpen(false)}}><FaUserCircle/>&nbsp;S'inscrire</Link>

@@ -2,6 +2,7 @@ import { createSlice, configureStore} from '@reduxjs/toolkit'
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import storageSession from 'redux-persist/lib/storage/session'
+import { fetchInfos } from '../middlewares/thunks'
 
 const localStorageUser = {
     key: 'localStorageUser',
@@ -39,6 +40,8 @@ const authSlice = createSlice({
 const userSlice = createSlice({
   name: 'userSlice',
   initialState: {
+    loading:'idle',
+    error:null,
     userInfos:[],
     adminInfos:[],
     defunctsList: [],
@@ -84,15 +87,30 @@ const userSlice = createSlice({
     },
     setListFriends : (state, action)=>{
       state.listFriends=action.payload
+    },
+  },
+    extraReducers: (builder) => {
+      builder
+        .addCase(fetchInfos.pending, (state) => {
+          state.loading = 'pending'
+        })
+        .addCase(fetchInfos.fulfilled, (state, action) => {
+          state.loading = 'idle'
+          state.userInfos = action.payload
+        })
+        .addCase(fetchInfos.rejected, (state, action) => {
+          state.loading = 'idle'
+          state.error = action.payload;
+        })
     }
-  }
 })
 
 const utilSlice = createSlice({
   name: 'utilSlice',
   initialState: {
     idDefIdSelected: null,
-    infosAdmin:[]
+    infosAdmin:[],
+    listAllDefunct:[]
   },
   reducers: {
     setDefIdSelected : (state,action)=>{
@@ -100,13 +118,16 @@ const utilSlice = createSlice({
     },
     setInfosAdmin : (state, action)=>{
       state.infosAdmin = action.payload
+    },
+    setAllDefunct : (state, action)=>{
+      state.listAllDefunct = action.payload
     }
   }
 })
 
 export const {setAuth, setToken,setId, setPwd} = authSlice.actions
 export const {setUserInfos, setNumberFriends, setNumberMessages, setDefunctsList,updateUserInfos,setSelectedDef,setAdminInfos,setListFriends} = userSlice.actions
-export const {setDefIdSelected,setInfosAdmin} = utilSlice.actions
+export const {setDefIdSelected,setInfosAdmin,setAllDefunct} = utilSlice.actions
 
 const authPersistSlice = persistReducer(sessionStorageAuth, authSlice.reducer)
 const userInfosPersistSlice = persistReducer(localStorageUser, userSlice.reducer)
